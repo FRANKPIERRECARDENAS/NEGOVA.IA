@@ -22,6 +22,7 @@ import {
   ResultadoPredictivo,
   ResultadoSimulacionExterna,
 } from "../../types/negova";
+import { BrandLogo } from "../BrandLogo";
 
 interface Step9InformeProps {
   input: AnalisisInput;
@@ -248,18 +249,21 @@ export function Step9Informe({
       <article className="bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-xl p-6 lg:p-8 space-y-8 print:bg-white print:text-[#0A1628] print:border-0 print:p-0">
         {/* Encabezado formal del expediente */}
         <div className="border-b border-[var(--border-hairline)] pb-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div>
-            <p className="text-[11px] font-mono uppercase tracking-[0.08em] text-[var(--accent-teal)]">
-              NEGOVA.IA · Expediente técnico de crédito adaptativo
-            </p>
-            <h3 className="font-display text-xl font-semibold text-[var(--text-primary)] mt-1">
-              {input.negocio.nombreComercial}
-            </h3>
-            <p className="text-xs text-[var(--text-muted)] mt-1">
-              Caso <span className="font-mono text-[var(--text-primary)]">{input.idCaso}</span> ·{" "}
-              {input.esSintetico ? "Perfil sintético de demostración" : "Caso ingresado en sesión"} ·
-              Estado: {estadoComite}
-            </p>
+          <div className="flex items-start gap-3.5">
+            <BrandLogo size="lg" className="mt-0.5" />
+            <div>
+              <p className="text-[11px] font-mono uppercase tracking-[0.08em] text-[var(--accent-teal)]">
+                NEGOVA.IA · Expediente técnico de crédito adaptativo
+              </p>
+              <h3 className="font-display text-xl font-semibold text-[var(--text-primary)] mt-1">
+                {input.negocio.nombreComercial}
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                Caso <span className="font-mono text-[var(--text-primary)]">{input.idCaso}</span> ·{" "}
+                {input.esSintetico ? "Perfil sintético de demostración" : "Caso ingresado en sesión"} ·
+                Estado: {estadoComite}
+              </p>
+            </div>
           </div>
           <div className="text-left sm:text-right text-xs font-mono tabular-nums text-[var(--text-secondary)] space-y-0.5 shrink-0">
             <p>

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 import { getFeaturedDemoProfiles, getSyntheticProfiles } from "../engines/syntheticData";
 import { PerfilSintetico, SegmentoSintetico } from "../types/negova";
+import { BrandLogo } from "./BrandLogo";
 
 interface DemoCasesModalProps {
   isOpen: boolean;
@@ -65,13 +66,16 @@ export function DemoCasesModal({
       <div className="bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-xl border border-[var(--border-hairline)] w-full max-w-4xl max-h-[88vh] flex flex-col overflow-hidden shadow-2xl">
         {/* Cabecera */}
         <div className="px-6 py-4 border-b border-[var(--border-hairline)] bg-[var(--bg-elevated)] flex items-center justify-between gap-4">
-          <div>
-            <h2 id="demo-cases-title" className="font-display text-lg font-semibold text-[var(--text-primary)]">
-              Explorar casos de demostración
-            </h2>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">
-              Base sintética reproducible de 1,000 negocios hipotéticos · No corresponde a clientes reales
-            </p>
+          <div className="flex items-center gap-3">
+            <BrandLogo size="md" />
+            <div>
+              <h2 id="demo-cases-title" className="font-display text-lg font-semibold text-[var(--text-primary)]">
+                Explorar casos de demostración
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                Base sintética reproducible de 1,000 negocios hipotéticos · No corresponde a clientes reales
+              </p>
+            </div>
           </div>
           <button
             type="button"

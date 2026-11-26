@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
 import { computeSyntheticValidationIndicators } from "../engines/validationBenchmarks";
+import { BrandLogo } from "./BrandLogo";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 
 interface IndicadoresViewProps {
@@ -26,10 +27,14 @@ export function IndicadoresView({
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+              className="inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0"
             >
               <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-              Volver
+              <BrandLogo size="sm" className="w-5 h-5" />
+              <span className="font-display font-bold text-[var(--text-primary)] hidden sm:inline">
+                NEGOVA.IA
+              </span>
+              <span className="sm:hidden">Volver</span>
             </button>
             <span className="text-[var(--border-strong)]" aria-hidden="true">
               /

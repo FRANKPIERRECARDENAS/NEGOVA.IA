@@ -18,6 +18,7 @@ import { Step6Predictivo } from "./steps/Step6Predictivo";
 import { Step7Comparacion } from "./steps/Step7Comparacion";
 import { Step8Simulacion } from "./steps/Step8Simulacion";
 import { Step9Informe } from "./steps/Step9Informe";
+import { BrandLogo } from "./BrandLogo";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 
 const STEPS = [
@@ -173,9 +174,10 @@ export function WizardWorkspace({
               <button
                 type="button"
                 onClick={onGoLanding}
-                className="font-display text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0"
+                className="inline-flex items-center gap-2 font-display text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0"
               >
-                NEGOVA.IA
+                <BrandLogo size="md" className="w-6 h-6" />
+                <span>NEGOVA.IA</span>
               </button>
               <span className="text-[var(--border-strong)] hidden sm:inline" aria-hidden="true">
                 /

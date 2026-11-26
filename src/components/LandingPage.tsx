@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { ArrowRight } from "lucide-react";
 import { computeSyntheticValidationIndicators } from "../engines/validationBenchmarks";
+import { BrandLogo } from "./BrandLogo";
 import { HeroExplainer } from "./HeroExplainer";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 
@@ -49,9 +50,15 @@ export function LandingPage({
         <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between gap-6">
           <a
             href="#inicio"
-            className="font-display text-xl font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0"
+            className="inline-flex items-center gap-2.5 font-display text-xl font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0"
           >
-            NEGOVA.IA
+            <img
+              src="/assets/aistudio/Logotipo_tecnol_gico_Negova.IA_956218e9.png"
+              alt="Logotipo de NEGOVA.IA"
+              className="w-[34px] h-[34px] object-contain shrink-0 select-none"
+              decoding="async"
+            />
+            <span>NEGOVA.IA</span>
           </a>
 
           <nav
@@ -256,10 +263,13 @@ export function LandingPage({
       {/* Pie de página editorial */}
       <footer className="border-t border-[var(--border-hairline)] bg-[var(--bg-surface)]">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
-          <p>
-            NEGOVA.IA · Prototipo Cajathon 2026 (Desafío NEG-01) · Base de pruebas sintética
-            reproducible
-          </p>
+          <div className="flex items-center gap-2.5">
+            <BrandLogo size="sm" />
+            <p>
+              NEGOVA.IA · Prototipo Cajathon 2026 (Desafío NEG-01) · Base de pruebas sintética
+              reproducible
+            </p>
+          </div>
           <div className="flex items-center gap-4">
             <button
               type="button"
