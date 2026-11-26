@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, PlayCircle } from "lucide-react";
 import { HeroExplainer } from "./HeroExplainer";
 import { ThemeToggleButton } from "./ThemeToggleButton";
@@ -10,6 +11,11 @@ interface LandingPageProps {
   onExploreDemoCases: () => void;
 }
 
+const HERO_VIDEO_SOURCES = [
+  "/assets/aistudio/204306-923909642_medium_bc1a5949.mp4",
+  "/public/assets/aistudio/204306-923909642_medium_bc1a5949.mp4",
+];
+
 export function LandingPage({
   theme,
   onToggleTheme,
@@ -17,6 +23,30 @@ export function LandingPage({
   onOpenIndicators,
   onExploreDemoCases,
 }: LandingPageProps) {
+  const [sourceIdx, setSourceIdx] = useState(0);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || videoFailed) return;
+    el.muted = true;
+    const playPromise = el.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {
+        // Ignorar bloqueo de autoplay si ocurre en algún navegador
+      });
+    }
+  }, [sourceIdx, videoFailed]);
+
+  const handleVideoError = () => {
+    if (sourceIdx + 1 < HERO_VIDEO_SOURCES.length) {
+      setSourceIdx((prev) => prev + 1);
+    } else {
+      setVideoFailed(true);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       {/* Encabezado minimalista */}
@@ -68,23 +98,46 @@ export function LandingPage({
         </div>
       </header>
 
-      {/* HERO minimalista */}
-      <main id="inicio" className="flex-1 flex flex-col justify-center">
-        <section className="max-w-6xl mx-auto w-full px-6 py-12 lg:py-20">
+      {/* HERO minimalista con video de fondo */}
+      <main
+        id="inicio"
+        className="relative flex-1 flex flex-col justify-center overflow-hidden bg-[#061529] dark:bg-slate-950"
+      >
+        {!videoFailed && (
+          <video
+            ref={videoRef}
+            key={HERO_VIDEO_SOURCES[sourceIdx]}
+            src={HERO_VIDEO_SOURCES[sourceIdx]}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            onError={handleVideoError}
+            className="absolute inset-0 z-0 h-full w-full object-cover pointer-events-none select-none"
+          />
+        )}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-[1] bg-gradient-to-br from-[#061529]/72 via-[#0B1F3A]/52 to-[#082832]/40 dark:from-slate-950/78 dark:via-[#0B1F3A]/58 dark:to-slate-950/48"
+        />
+
+        <section className="relative z-10 max-w-6xl mx-auto w-full px-6 py-12 lg:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <div className="lg:col-span-6 space-y-6">
-              <p className="text-xs font-medium text-teal-700 dark:text-teal-400 tracking-wide">
+              <p className="text-xs font-medium text-teal-300 tracking-wide">
                 El crédito se adapta al ritmo de tu negocio · Desafío NEG-01
               </p>
 
               <h1
-                className="font-bold tracking-tight text-[#0B1F3A] dark:text-white leading-[1.12] text-balance"
+                className="font-bold tracking-tight text-white leading-[1.12] text-balance"
                 style={{ fontSize: "clamp(2.15rem, 3.6vw, 3.25rem)" }}
               >
                 Cada negocio tiene su propio ritmo. Su crédito también debería tenerlo.
               </h1>
 
-              <p className="text-base lg:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
+              <p className="text-base lg:text-lg text-slate-200 leading-relaxed max-w-xl">
                 Inteligencia predictiva que transforma el comportamiento económico de cada
                 negocio en planes de pago personalizados.
               </p>
@@ -93,23 +146,25 @@ export function LandingPage({
                 <button
                   type="button"
                   onClick={onStartAnalysis}
-                  className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-[#0B1F3A] dark:bg-teal-600 rounded-xl hover:bg-[#143058] dark:hover:bg-teal-500 transition-colors whitespace-nowrap shrink-0 shadow-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-[#061529] bg-teal-400 rounded-xl hover:bg-teal-300 transition-colors whitespace-nowrap shrink-0 shadow-sm"
                 >
                   Analizar un negocio
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <a
                   href="#como-funciona"
-                  className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-[#0B1F3A] dark:text-slate-100 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0"
+                  className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-white/10 border border-white/25 rounded-xl hover:bg-white/20 backdrop-blur-sm transition-colors whitespace-nowrap shrink-0"
                 >
-                  <PlayCircle className="w-4 h-4 text-teal-700 dark:text-teal-400" />
+                  <PlayCircle className="w-4 h-4 text-teal-300" />
                   Ver cómo funciona
                 </a>
               </div>
             </div>
 
             <div id="como-funciona" className="lg:col-span-6">
-              <HeroExplainer />
+              <div className="rounded-2xl shadow-2xl ring-1 ring-white/15">
+                <HeroExplainer />
+              </div>
             </div>
           </div>
         </section>
