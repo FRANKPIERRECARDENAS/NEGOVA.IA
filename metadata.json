@@ -1,0 +1,6 @@
+{
+  "name": "NEGOVA.IA — Crédito Adaptativo al Ciclo Económico",
+  "description": "Prototipo fintech de inteligencia predictiva y optimización financiera para adaptar cronogramas de crédito al ciclo económico individual de cada negocio (Desafío NEG-01, Cajathon 2026).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
