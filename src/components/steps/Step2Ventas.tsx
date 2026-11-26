@@ -38,7 +38,6 @@ export function Step2Ventas({
   const mesesMayores = sorted.slice(0, 3).map((m) => m.etiquetaMes);
   const mesesMenores = sorted.slice(-3).reverse().map((m) => m.etiquetaMes);
 
-  // Tendencia lineal simple en los meses ingresados
   let tendenciaLabel = "Sin datos suficientes";
   if (validSales.length >= 4) {
     const firstHalf = validSales.slice(0, Math.floor(validSales.length / 2));
@@ -72,11 +71,14 @@ export function Step2Ventas({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-8">
+      <div className="pb-5 border-b border-[var(--border-hairline)] flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#0B1F3A] dark:text-white">2. Ventas mensuales</h2>
-          <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
+          <p className="text-xs font-mono text-[var(--accent-teal)]">Etapa 02 · Serie histórica</p>
+          <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
+            2. Ventas mensuales
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
             Registra las ventas de los últimos 12 meses. Si algún mes no está disponible, déjalo
             vacío: el modelo ajustará la confianza sin inventar cifras.
           </p>
@@ -84,102 +86,117 @@ export function Step2Ventas({
         <button
           type="button"
           onClick={onOpenDemoCases}
-          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors whitespace-nowrap shrink-0"
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-[var(--accent-teal)] bg-[var(--accent-teal-soft)] border border-[var(--accent-teal)]/25 rounded-lg hover:opacity-85 transition-opacity whitespace-nowrap shrink-0"
         >
-          <Database className="w-3.5 h-3.5" />
+          <Database className="w-3.5 h-3.5" aria-hidden="true" />
           Usar perfil sintético precargado
         </button>
       </div>
 
-      {/* Resumen de tendencia y estacionalidad observada */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5">
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">Meses disponibles</p>
-          <p className="text-lg font-bold text-[#0B1F3A] dark:text-white font-mono tabular-nums mt-0.5">
+      {/* Ledger de síntesis estacional */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 border border-[var(--border-hairline)] rounded-lg divide-y lg:divide-y-0 lg:divide-x divide-[var(--border-hairline)] bg-[var(--bg-elevated)]">
+        <div className="p-4">
+          <p className="text-[11px] text-[var(--text-muted)]">Meses disponibles</p>
+          <p className="text-lg font-semibold text-[var(--text-primary)] font-mono tabular-nums mt-1">
             {mesesDisponibles} / 12
           </p>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5">
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">Tendencia observada</p>
-          <p className="text-sm font-semibold text-[#0B1F3A] dark:text-white mt-1">{tendenciaLabel}</p>
-        </div>
-        <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5">
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">Meses de mayores ingresos</p>
-          <p className="text-sm font-semibold text-teal-700 dark:text-teal-400 mt-1">
-            {mesesMayores.length ? mesesMayores.join(", ") : "—"}
+        <div className="p-4">
+          <p className="text-[11px] text-[var(--text-muted)]">Tendencia observada</p>
+          <p className="text-sm font-semibold text-[var(--text-primary)] font-mono tabular-nums mt-1.5">
+            {tendenciaLabel}
           </p>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5">
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">Meses de menores ingresos</p>
-          <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mt-1">
-            {mesesMenores.length ? mesesMenores.join(", ") : "—"}
+        <div className="p-4">
+          <p className="text-[11px] text-[var(--text-muted)]">Meses de mayores ingresos</p>
+          <p className="text-sm font-semibold text-[var(--accent-teal)] font-mono mt-1.5">
+            {mesesMayores.length ? mesesMayores.join(" · ") : "—"}
+          </p>
+        </div>
+        <div className="p-4">
+          <p className="text-[11px] text-[var(--text-muted)]">Meses de menores ingresos</p>
+          <p className="text-sm font-semibold text-[var(--accent-warning)] font-mono mt-1.5">
+            {mesesMenores.length ? mesesMenores.join(" · ") : "—"}
           </p>
         </div>
       </div>
 
       {mesesDisponibles < 12 && (
-        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 rounded-xl px-4 py-3 text-xs text-amber-900 dark:text-amber-200">
-          Información parcial ({mesesDisponibles} de 12 meses registrados). El sistema usará
-          patrones sintéticos sectoriales/regionales para los meses sin historial y reducirá el
-          nivel de confianza de la estimación.
+        <div className="bg-[var(--accent-warning-soft)] border border-[var(--accent-warning)]/30 rounded-lg px-4 py-3 text-xs text-[var(--text-primary)]">
+          <strong className="text-[var(--accent-warning)]">Información parcial ({mesesDisponibles} de 12 meses registrados):</strong>{" "}
+          el sistema usará patrones sintéticos sectoriales y regionales para los meses sin historial
+          y reducirá el nivel de confianza de la estimación.
         </div>
       )}
 
       {error && (
-        <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 rounded-xl px-4 py-3 text-xs text-rose-800 dark:text-rose-200">
+        <div className="bg-[var(--accent-risk-soft)] border border-[var(--accent-risk)]/35 rounded-lg px-4 py-3 text-xs text-[var(--accent-risk)] font-medium">
           {error}
         </div>
       )}
 
       {/* Gráfico de ventas */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-            Perfil histórico de ventas (S/){promedio > 0 ? ` · Promedio S/ ${promedio.toLocaleString("es-PE")}` : ""}
+      <div className="border border-[var(--border-hairline)] bg-[var(--bg-elevated)] rounded-lg p-5">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xs font-medium text-[var(--text-secondary)]">
+            Perfil histórico de ventas (S/)
           </p>
+          {promedio > 0 && (
+            <p className="text-xs font-mono tabular-nums text-[var(--text-primary)]">
+              Promedio: S/ {promedio.toLocaleString("es-PE")}
+            </p>
+          )}
         </div>
         <div className="h-52 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#94A3B8" strokeOpacity={0.25} vertical={false} />
-              <XAxis dataKey="mes" tick={{ fontSize: 11, fill: "#94A3B8" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+              <XAxis
+                dataKey="mes"
+                tick={{ fontSize: 11, fill: "var(--chart-tick)", fontFamily: "var(--font-mono)" }}
+                axisLine={{ stroke: "var(--border-hairline)" }}
+                tickLine={false}
+              />
               <YAxis
-                tick={{ fontSize: 11, fill: "#94A3B8" }}
+                tick={{ fontSize: 11, fill: "var(--chart-tick)", fontFamily: "var(--font-mono)" }}
                 tickFormatter={(val) => `${Math.round(Number(val) / 1000)}k`}
+                axisLine={false}
+                tickLine={false}
                 width={38}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#0f172a",
-                  borderColor: "#334155",
-                  color: "#f8fafc",
+                  backgroundColor: "var(--chart-tooltip-bg)",
+                  borderColor: "var(--chart-tooltip-border)",
+                  color: "var(--chart-tooltip-text)",
                   borderRadius: "0.5rem",
                   fontSize: "12px",
+                  fontFamily: "var(--font-mono)",
                 }}
-                itemStyle={{ color: "#f8fafc" }}
-                labelStyle={{ color: "#94a3b8", fontWeight: 600 }}
+                itemStyle={{ color: "var(--chart-tooltip-text)" }}
+                labelStyle={{ color: "var(--text-on-ink-muted)", fontWeight: 600 }}
                 formatter={(value) => [
                   `S/ ${Number(value).toLocaleString("es-PE")}`,
                   "Ventas",
                 ]}
               />
-              <Bar dataKey="ventas" fill="#0D9488" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="ventas" fill="var(--accent-teal)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Tabla editable de 12 meses */}
+      {/* Matriz editable de 12 meses */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
         {ventas.map((v, idx) => (
           <div
             key={v.etiquetaMes}
-            className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-white dark:bg-slate-800/60"
+            className="border border-[var(--border-hairline)] rounded-lg p-3 bg-[var(--bg-elevated)]"
           >
             <div className="flex items-center justify-between mb-1.5">
               <label
                 htmlFor={`venta-mes-${idx}`}
-                className="text-xs font-semibold text-[#0B1F3A] dark:text-slate-100"
+                className="text-xs font-semibold text-[var(--text-primary)]"
               >
                 {v.etiquetaMes}
               </label>
@@ -187,7 +204,7 @@ export function Step2Ventas({
                 <button
                   type="button"
                   onClick={() => updateMonth(idx, "")}
-                  className="text-[11px] text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                  className="text-[11px] text-[var(--text-muted)] hover:text-[var(--accent-risk)] transition-colors"
                   title="Marcar como no disponible"
                 >
                   Limpiar
@@ -195,7 +212,7 @@ export function Step2Ventas({
               )}
             </div>
             <div className="relative">
-              <span className="text-xs text-slate-400 dark:text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2">
+              <span className="text-xs font-mono text-[var(--text-muted)] absolute left-2.5 top-1/2 -translate-y-1/2">
                 S/
               </span>
               <input
@@ -206,7 +223,7 @@ export function Step2Ventas({
                 value={v.monto === null ? "" : v.monto}
                 onChange={(e) => updateMonth(idx, e.target.value)}
                 placeholder="No disp."
-                className="w-full pl-7 pr-2 py-1.5 text-sm font-mono tabular-nums bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+                className="w-full pl-7 pr-2 py-1.5 text-sm font-mono tabular-nums bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-md focus:outline-none focus:border-[var(--accent-teal)]"
               />
             </div>
           </div>

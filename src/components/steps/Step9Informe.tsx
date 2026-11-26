@@ -73,7 +73,12 @@ export function Step9Informe({
   useEffect(() => {
     void loadExplanation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [input.idCaso, comparacion.adaptado.costoTotalCredito, simulacion?.parametros.fenomeno, simulacion?.parametros.intensidad]);
+  }, [
+    input.idCaso,
+    comparacion.adaptado.costoTotalCredito,
+    simulacion?.parametros.fenomeno,
+    simulacion?.parametros.intensidad,
+  ]);
 
   const handleDownloadHtml = () => {
     const html = `<!doctype html>
@@ -82,12 +87,12 @@ export function Step9Informe({
 <meta charset="utf-8" />
 <title>Informe Comité NEGOVA.IA - ${escapeHtml(input.idCaso)}</title>
 <style>
-  body { font-family: system-ui, -apple-system, sans-serif; color: #0f172a; margin: 32px; line-height: 1.5; }
-  h1, h2 { color: #0B1F3A; }
-  .meta { font-size: 13px; color: #475569; margin-bottom: 20px; }
-  .box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
-  th, td { border-bottom: 1px solid #e2e8f0; padding: 6px 8px; text-align: right; }
+  body { font-family: system-ui, -apple-system, sans-serif; color: #0A1628; margin: 32px; line-height: 1.5; background: #F6F5F0; }
+  h1, h2 { color: #0A1628; }
+  .meta { font-size: 13px; color: #414F63; margin-bottom: 20px; }
+  .box { background: #ffffff; border: 1px solid #DEDAD0; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; background: #ffffff; }
+  th, td { border-bottom: 1px solid #DEDAD0; padding: 6px 8px; text-align: right; }
   th:first-child, td:first-child { text-align: left; }
 </style>
 </head>
@@ -156,22 +161,27 @@ export function Step9Informe({
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Barra de acciones no imprimible */}
-      <div className="no-print flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="no-print pb-5 border-b border-[var(--border-hairline)] flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#0B1F3A] dark:text-white">9. Informe técnico para el Comité</h2>
-          <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-            Documento ejecutivo estructurado. El sistema recomienda y aporta evidencia; la
-            decisión definitiva corresponde al Comité.
+          <p className="text-xs font-mono text-[var(--accent-teal)]">
+            Etapa 09 · Expediente de Comité
+          </p>
+          <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
+            9. Informe técnico para el Comité
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
+            Documento ejecutivo estructurado. El sistema recomienda y aporta evidencia; la decisión
+            definitiva corresponde al Comité.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap lg:flex-nowrap items-center gap-2 shrink-0">
           <button
             type="button"
             onClick={onSaveCase}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] border border-[var(--border-hairline)] hover:border-[var(--border-strong)] rounded-lg transition-colors whitespace-nowrap"
           >
             <Save className="w-3.5 h-3.5" />
             Guardar caso localmente
@@ -179,7 +189,7 @@ export function Step9Informe({
           <button
             type="button"
             onClick={handleDownloadHtml}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] border border-[var(--border-hairline)] hover:border-[var(--border-strong)] rounded-lg transition-colors whitespace-nowrap"
           >
             <Download className="w-3.5 h-3.5" />
             Descargar informe
@@ -187,7 +197,7 @@ export function Step9Informe({
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0B1F3A] dark:bg-teal-600 rounded-lg hover:bg-[#143058] dark:hover:bg-teal-500 transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[var(--text-on-ink)] bg-[var(--bg-ink)] hover:bg-[var(--bg-ink-subtle)] dark:bg-[var(--accent-teal)] dark:text-[#041418] dark:hover:bg-[var(--accent-teal-hover)] rounded-lg transition-colors whitespace-nowrap"
           >
             <Printer className="w-3.5 h-3.5" />
             Imprimir / PDF
@@ -196,18 +206,18 @@ export function Step9Informe({
       </div>
 
       {savedNotification && (
-        <div className="no-print bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 rounded-xl px-4 py-2.5 text-xs font-medium text-teal-900 dark:text-teal-200">
+        <div className="no-print bg-[var(--accent-teal-soft)] border border-[var(--accent-teal)]/40 rounded-lg px-4 py-2.5 text-xs font-medium text-[var(--text-primary)]">
           {savedNotification}
         </div>
       )}
 
       {/* Flujo de revisión del prototipo */}
-      <div className="no-print bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 space-y-3">
+      <div className="no-print bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-xl p-5 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <p className="text-xs font-bold text-[#0B1F3A] dark:text-white">
+          <p className="text-xs font-semibold text-[var(--text-primary)]">
             Estado del flujo de revisión (simulación de flujo en prototipo)
           </p>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">
+          <span className="text-[11px] font-mono text-[var(--text-muted)]">
             Sin conexión al core real de Caja Trujillo
           </span>
         </div>
@@ -218,11 +228,12 @@ export function Step9Informe({
               <button
                 key={estado}
                 type="button"
+                aria-pressed={active}
                 onClick={() => onChangeEstadoComite(estado)}
-                className={`text-left px-3.5 py-2.5 rounded-xl border text-xs transition-colors ${
+                className={`text-left px-3.5 py-2.5 rounded-lg border text-xs transition-colors duration-150 ${
                   active
-                    ? "border-[#0B1F3A] dark:border-teal-500 bg-[#0B1F3A] dark:bg-teal-600 text-white font-semibold"
-                    : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    ? "border-[var(--bg-ink)] bg-[var(--bg-ink)] text-[var(--text-on-ink)] dark:border-[var(--accent-teal)] dark:bg-[var(--accent-teal)] dark:text-[#041418] font-semibold"
+                    : "border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--border-strong)]"
                 }`}
               >
                 <span className="font-mono mr-1.5">{idx + 1}.</span>
@@ -233,107 +244,179 @@ export function Step9Informe({
         </div>
       </div>
 
-      {/* Documento del informe */}
-      <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 lg:p-8 space-y-8 print:bg-white print:text-slate-900">
-        {/* Encabezado del informe */}
-        <div className="border-b border-slate-200 dark:border-slate-800 pb-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+      {/* Documento institucional del informe */}
+      <article className="bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-xl p-6 lg:p-8 space-y-8 print:bg-white print:text-[#0A1628] print:border-0 print:p-0">
+        {/* Encabezado formal del expediente */}
+        <div className="border-b border-[var(--border-hairline)] pb-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold text-teal-700 dark:text-teal-400">
+            <p className="text-[11px] font-mono uppercase tracking-[0.08em] text-[var(--accent-teal)]">
               NEGOVA.IA · Expediente técnico de crédito adaptativo
             </p>
-            <h3 className="text-lg font-bold text-[#0B1F3A] dark:text-white mt-1">
+            <h3 className="font-display text-xl font-semibold text-[var(--text-primary)] mt-1">
               {input.negocio.nombreComercial}
             </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-              Caso {input.idCaso} · {input.esSintetico ? "Perfil sintético de demostración" : "Caso ingresado en sesión"} · Estado: {estadoComite}
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              Caso <span className="font-mono text-[var(--text-primary)]">{input.idCaso}</span> ·{" "}
+              {input.esSintetico ? "Perfil sintético de demostración" : "Caso ingresado en sesión"} ·
+              Estado: {estadoComite}
             </p>
           </div>
-          <div className="text-left sm:text-right text-xs font-mono tabular-nums text-slate-600 dark:text-slate-300">
-            <p>Monto: S/ {input.credito.montoSolicitado.toLocaleString("es-PE")}</p>
+          <div className="text-left sm:text-right text-xs font-mono tabular-nums text-[var(--text-secondary)] space-y-0.5 shrink-0">
+            <p>
+              Monto:{" "}
+              <strong className="text-[var(--text-primary)]">
+                S/ {input.credito.montoSolicitado.toLocaleString("es-PE")}
+              </strong>
+            </p>
             <p>
               Plazo: {input.credito.plazoMeses} m · TEA {(input.credito.tea * 100).toFixed(2)}%
             </p>
-            <p>Factor máx.: {input.credito.productoConfig.factorMaximoCapacidadPago.toFixed(2)}</p>
+            <p>
+              Factor máx.: {input.credito.productoConfig.factorMaximoCapacidadPago.toFixed(2)}
+            </p>
           </div>
         </div>
 
-        {/* Bloque 1: Características y ciclo */}
+        {/* Bloque 1: Identificación y ciclo económico */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
           <div className="space-y-2">
-            <h4 className="text-sm font-bold text-[#0B1F3A] dark:text-white">Identificación y ubicación</h4>
-            <p className="text-slate-700 dark:text-slate-300">
-              <strong className="text-slate-900 dark:text-white">Sector y actividad:</strong> {input.negocio.sector} —{" "}
-              {input.negocio.actividadEspecifica}
+            <h4 className="text-xs font-mono uppercase tracking-[0.06em] text-[var(--text-muted)]">
+              Identificación y ubicación
+            </h4>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">Sector y actividad:</strong>{" "}
+              {input.negocio.sector} — {input.negocio.actividadEspecifica}
             </p>
-            <p className="text-slate-700 dark:text-slate-300">
-              <strong className="text-slate-900 dark:text-white">Modelo:</strong> {input.negocio.modeloNegocio} ({input.negocio.tipoOperacion})
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">Modelo:</strong>{" "}
+              {input.negocio.modeloNegocio} ({input.negocio.tipoOperacion})
             </p>
-            <p className="text-slate-700 dark:text-slate-300">
-              <strong className="text-slate-900 dark:text-white">Ubicación:</strong> {input.negocio.distritoZona}, {input.negocio.provincia},{" "}
-              {input.negocio.departamento}
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">Ubicación:</strong>{" "}
+              {input.negocio.distritoZona}, {input.negocio.provincia}, {input.negocio.departamento}
             </p>
-            <p className="text-slate-700 dark:text-slate-300">
-              <strong className="text-slate-900 dark:text-white">Formalidad:</strong> {input.negocio.formalidad}
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">Formalidad:</strong>{" "}
+              {input.negocio.formalidad}
             </p>
           </div>
 
           <div className="space-y-2">
-            <h4 className="text-sm font-bold text-[#0B1F3A] dark:text-white">Ciclo económico estimado</h4>
-            <p className="text-slate-700 dark:text-slate-300">
-              <strong className="text-slate-900 dark:text-white">Etapas de mayor capacidad:</strong>{" "}
+            <h4 className="text-xs font-mono uppercase tracking-[0.06em] text-[var(--text-muted)]">
+              Ciclo económico estimado
+            </h4>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">Etapas de mayor capacidad:</strong>{" "}
               {predictivo.mesesMayorCapacidad.join(", ")}
             </p>
-            <p className="text-slate-700 dark:text-slate-300">
-              <strong className="text-slate-900 dark:text-white">Etapas de menor capacidad:</strong>{" "}
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">Etapas de menor capacidad:</strong>{" "}
               {predictivo.mesesMenorCapacidad.join(", ")}
             </p>
-            <p className="text-slate-700 dark:text-slate-300">
-              <strong className="text-slate-900 dark:text-white">Tendencia y volatilidad:</strong> {predictivo.tendencia} (
-              {predictivo.volatilidadPct}% volatilidad) · Confianza {predictivo.nivelConfianza}%
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">Tendencia y volatilidad:</strong>{" "}
+              {predictivo.tendencia} ({predictivo.volatilidadPct}% volatilidad) · Confianza{" "}
+              <span className="font-mono tabular-nums">{predictivo.nivelConfianza}%</span>
             </p>
-            <p className="text-slate-700 dark:text-slate-300">
-              <strong className="text-slate-900 dark:text-white">Utilidad neta disponible promedio:</strong> S/{" "}
-              {predictivo.utilidadNetaPromedio.toLocaleString("es-PE")}
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">
+                Utilidad neta disponible promedio:
+              </strong>{" "}
+              <span className="font-mono tabular-nums text-[var(--text-primary)]">
+                S/ {predictivo.utilidadNetaPromedio.toLocaleString("es-PE")}
+              </span>
             </p>
           </div>
         </div>
 
         {/* Gráfico resumido para el Comité */}
-        <div>
-          <h4 className="text-sm font-bold text-[#0B1F3A] dark:text-white mb-3">
-            Ingresos proyectados, utilidad neta y cuota adaptada propuesta
-          </h4>
+        <div className="pt-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <h4 className="text-sm font-semibold text-[var(--text-primary)]">
+              Ingresos proyectados, utilidad neta y cuota adaptada propuesta
+            </h4>
+            <div className="flex flex-wrap items-center gap-4 text-[11px] text-[var(--text-muted)]">
+              <span className="inline-flex items-center gap-1.5">
+                <span
+                  className="w-2 h-2 rounded-xs inline-block"
+                  style={{ backgroundColor: "var(--chart-bar-base)" }}
+                  aria-hidden="true"
+                />
+                Ventas
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span
+                  className="w-2 h-2 rounded-xs inline-block"
+                  style={{ backgroundColor: "var(--chart-bar-secondary)" }}
+                  aria-hidden="true"
+                />
+                Utilidad neta
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[var(--accent-teal)]">
+                <span
+                  className="w-3 h-0.5 inline-block"
+                  style={{ backgroundColor: "var(--accent-teal)" }}
+                  aria-hidden="true"
+                />
+                Cuota adaptada
+              </span>
+            </div>
+          </div>
+
           <div className="h-56 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={chartData} margin={{ top: 8, right: 12, left: 4, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#94A3B8" strokeOpacity={0.25} vertical={false} />
-                <XAxis dataKey="periodo" tick={{ fontSize: 10, fill: "#94A3B8" }} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--chart-grid)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="periodo"
+                  tick={{ fontSize: 10, fill: "var(--chart-tick)" }}
+                  axisLine={{ stroke: "var(--border-hairline)" }}
+                  tickLine={false}
+                />
                 <YAxis
-                  tick={{ fontSize: 10, fill: "#94A3B8" }}
+                  tick={{ fontSize: 10, fill: "var(--chart-tick)" }}
+                  axisLine={false}
+                  tickLine={false}
                   tickFormatter={(v) => `S/${Math.round(Number(v) / 1000)}k`}
                   width={48}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#0f172a",
-                    borderColor: "#334155",
-                    color: "#f8fafc",
+                    backgroundColor: "var(--chart-tooltip-bg)",
+                    borderColor: "var(--chart-tooltip-border)",
+                    color: "var(--chart-tooltip-text)",
                     borderRadius: "0.5rem",
                     fontSize: "12px",
                   }}
-                  itemStyle={{ color: "#f8fafc" }}
-                  labelStyle={{ color: "#94a3b8", fontWeight: 600 }}
+                  itemStyle={{ color: "var(--chart-tooltip-text)" }}
+                  labelStyle={{ color: "var(--text-on-ink-muted)", fontWeight: 600 }}
                   formatter={(value) => `S/ ${Number(value).toLocaleString("es-PE")}`}
                 />
-                <Bar dataKey="ventas" name="Ventas proyectadas" fill="#94A3B8" barSize={16} />
-                <Bar dataKey="utilidad" name="Utilidad neta" fill="#3B6E9C" barSize={16} />
+                <Bar
+                  dataKey="ventas"
+                  name="Ventas proyectadas"
+                  fill="var(--chart-bar-base)"
+                  radius={[2, 2, 0, 0]}
+                  barSize={15}
+                />
+                <Bar
+                  dataKey="utilidad"
+                  name="Utilidad neta"
+                  fill="var(--chart-bar-secondary)"
+                  radius={[2, 2, 0, 0]}
+                  barSize={15}
+                />
                 <Line
                   type="monotone"
                   dataKey="cuotaAdaptada"
                   name="Cuota adaptada"
-                  stroke="#0D9488"
+                  stroke="var(--accent-teal)"
                   strokeWidth={2.5}
-                  dot={{ r: 2.5 }}
+                  dot={{ r: 2.5, fill: "var(--accent-teal)", strokeWidth: 0 }}
                 />
               </ComposedChart>
             </ResponsiveContainer>
@@ -341,16 +424,16 @@ export function Step9Informe({
         </div>
 
         {/* Capa explicativa Gemini / Analítica */}
-        <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-5 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-xl p-5 sm:p-6 space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[var(--border-hairline)]">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-teal-700 dark:text-teal-400" />
-              <h4 className="text-sm font-bold text-[#0B1F3A] dark:text-white">
+              <Sparkles className="w-4 h-4 text-[var(--accent-teal)]" />
+              <h4 className="text-sm font-semibold text-[var(--text-primary)]">
                 Interpretación ejecutiva y explicación de la propuesta
               </h4>
             </div>
             <div className="flex items-center gap-3 no-print">
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">
+              <span className="text-[11px] font-mono text-[var(--text-muted)]">
                 {loadingAI
                   ? "Generando interpretación..."
                   : explicacion.fuente === "gemini"
@@ -361,7 +444,7 @@ export function Step9Informe({
                 type="button"
                 onClick={loadExplanation}
                 disabled={loadingAI}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-teal-800 dark:text-teal-300 hover:text-teal-950 dark:hover:text-teal-200 disabled:opacity-50"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent-teal)] hover:text-[var(--accent-teal-hover)] disabled:opacity-50"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loadingAI ? "animate-spin" : ""}`} />
                 Actualizar
@@ -369,123 +452,157 @@ export function Step9Informe({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs text-[var(--text-secondary)] leading-relaxed">
             <div>
-              <p className="font-semibold text-[#0B1F3A] dark:text-white mb-1">
+              <p className="font-semibold text-[var(--text-primary)] mb-1">
                 Por qué existen meses altos y bajos
               </p>
               <p>{explicacion.explicacionEstacionalidad}</p>
             </div>
             <div>
-              <p className="font-semibold text-[#0B1F3A] dark:text-white mb-1">
+              <p className="font-semibold text-[var(--text-primary)] mb-1">
                 Justificación de las cuotas propuestas
               </p>
               <p>{explicacion.justificacionCuotas}</p>
             </div>
             <div>
-              <p className="font-semibold text-[#0B1F3A] dark:text-white mb-1">Comparación financiera</p>
+              <p className="font-semibold text-[var(--text-primary)] mb-1">
+                Comparación financiera
+              </p>
               <p>{explicacion.comparacionPlanes}</p>
             </div>
             <div>
-              <p className="font-semibold text-[#0B1F3A] dark:text-white mb-1">Riesgos y escenarios adversos</p>
+              <p className="font-semibold text-[var(--text-primary)] mb-1">
+                Riesgos y escenarios adversos
+              </p>
               <p>{explicacion.resumenRiesgos}</p>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-200 dark:border-slate-700 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed">
+          <div className="pt-4 border-t border-[var(--border-hairline)] grid grid-cols-1 md:grid-cols-2 gap-5 text-xs leading-relaxed">
             <div>
-              <p className="font-semibold text-[#0B1F3A] dark:text-white mb-1">
+              <p className="font-semibold text-[var(--text-primary)] mb-1">
                 Conclusión técnica para el Asesor de Riesgos y Comité
               </p>
-              <p className="text-slate-800 dark:text-slate-200">{explicacion.conclusionComite}</p>
+              <p className="text-[var(--text-secondary)]">{explicacion.conclusionComite}</p>
             </div>
             <div>
-              <p className="font-semibold text-teal-800 dark:text-teal-300 mb-1">
+              <p className="font-semibold text-[var(--accent-teal)] mb-1">
                 Explicación sencilla para el microempresario
               </p>
-              <p className="text-slate-800 dark:text-slate-200">{explicacion.explicacionSencilla}</p>
+              <p className="text-[var(--text-secondary)]">{explicacion.explicacionSencilla}</p>
             </div>
           </div>
         </div>
 
         {/* Resumen financiero comparado e impacto de estrés */}
-        <div className="space-y-4">
-          <h4 className="text-sm font-bold text-[#0B1F3A] dark:text-white">
+        <div className="space-y-5">
+          <h4 className="text-sm font-semibold text-[var(--text-primary)]">
             Comparación financiera y cronograma propuesto (Tradicional vs. Adaptado)
           </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/40 rounded-xl p-3.5">
-              <p className="text-slate-500 dark:text-slate-400">Plan Tradicional (Cuota fija)</p>
-              <p className="text-sm font-bold font-mono tabular-nums text-[#0B1F3A] dark:text-white mt-1">
-                Costo total: S/ {comparacion.tradicional.costoTotalCredito.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 border border-[var(--border-hairline)] rounded-xl overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-[var(--border-hairline)] text-xs">
+            <div className="bg-[var(--bg-surface)] p-4">
+              <p className="text-[var(--text-muted)]">Plan Tradicional (Cuota fija)</p>
+              <p className="text-sm font-semibold font-mono tabular-nums text-[var(--text-primary)] mt-1.5">
+                Costo total: S/{" "}
+                {comparacion.tradicional.costoTotalCredito.toLocaleString("es-PE", {
+                  minimumFractionDigits: 2,
+                })}
               </p>
-              <p className="text-slate-600 dark:text-slate-300 mt-0.5">
-                TCEA: {comparacion.tradicional.tcea !== null ? `${(comparacion.tradicional.tcea * 100).toFixed(2)}%` : "N/D"} · Incumplimientos: {comparacion.tradicional.periodosIncumplen}
+              <p className="text-[var(--text-secondary)] mt-1 font-mono tabular-nums">
+                TCEA:{" "}
+                {comparacion.tradicional.tcea !== null
+                  ? `${(comparacion.tradicional.tcea * 100).toFixed(2)}%`
+                  : "N/D"}{" "}
+                · Incumplimientos: {comparacion.tradicional.periodosIncumplen}
               </p>
             </div>
-            <div className="border border-teal-200 dark:border-teal-800 bg-teal-50/40 dark:bg-teal-950/40 rounded-xl p-3.5">
-              <p className="text-teal-800 dark:text-teal-300 font-medium">Plan Adaptado (Negova.IA)</p>
-              <p className="text-sm font-bold font-mono tabular-nums text-[#0B1F3A] dark:text-white mt-1">
-                Costo total: S/ {comparacion.adaptado.costoTotalCredito.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
+
+            <div className="bg-[var(--accent-teal-soft)] p-4">
+              <p className="text-[var(--accent-teal)] font-semibold">Plan Adaptado (Negova.IA)</p>
+              <p className="text-sm font-semibold font-mono tabular-nums text-[var(--text-primary)] mt-1.5">
+                Costo total: S/{" "}
+                {comparacion.adaptado.costoTotalCredito.toLocaleString("es-PE", {
+                  minimumFractionDigits: 2,
+                })}
               </p>
-              <p className="text-slate-700 dark:text-slate-300 mt-0.5">
-                TCEA: {comparacion.adaptado.tcea !== null ? `${(comparacion.adaptado.tcea * 100).toFixed(2)}%` : "N/D"} · Viable: {comparacion.adaptado.viable ? "Sí" : "No"} ({comparacion.adaptado.periodosIncumplen} incumplimientos)
+              <p className="text-[var(--text-secondary)] mt-1 font-mono tabular-nums">
+                TCEA:{" "}
+                {comparacion.adaptado.tcea !== null
+                  ? `${(comparacion.adaptado.tcea * 100).toFixed(2)}%`
+                  : "N/D"}{" "}
+                · Viable: {comparacion.adaptado.viable ? "Sí" : "No"} (
+                {comparacion.adaptado.periodosIncumplen} incumpl.)
               </p>
             </div>
-            <div className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/40 rounded-xl p-3.5">
-              <p className="text-slate-500 dark:text-slate-400">Escenario adverso simulado</p>
+
+            <div className="bg-[var(--bg-surface)] p-4">
+              <p className="text-[var(--text-muted)]">Escenario adverso simulado</p>
               {simulacion ? (
                 <>
-                  <p className="text-sm font-bold text-amber-800 dark:text-amber-300 mt-1">
+                  <p className="text-sm font-semibold text-[var(--accent-warning)] mt-1.5">
                     {simulacion.parametros.fenomeno} ({simulacion.parametros.intensidad})
                   </p>
-                  <p className="text-slate-600 dark:text-slate-300 mt-0.5 font-mono tabular-nums">
-                    Ventas {simulacion.impactoVentasPct}% · Incumplimientos: {simulacion.cuotasQueIncumplenFijo} fijo / {simulacion.cuotasQueIncumplenAdaptado} adapt.
+                  <p className="text-[var(--text-secondary)] mt-1 font-mono tabular-nums">
+                    Ventas {simulacion.impactoVentasPct}% · Incumpl.:{" "}
+                    {simulacion.cuotasQueIncumplenFijo} fijo /{" "}
+                    {simulacion.cuotasQueIncumplenAdaptado} adapt.
                   </p>
                 </>
               ) : (
-                <p className="text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-[var(--text-muted)] mt-1.5">
                   Sin simulación externa ejecutada en este expediente.
                 </p>
               )}
             </div>
           </div>
 
-          <div className="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
+          <div className="overflow-x-auto border border-[var(--border-hairline)] rounded-xl">
             <table className="w-full text-left border-collapse text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+              <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border-hairline)] text-[var(--text-muted)]">
                 <tr>
-                  <th className="py-2 px-3 font-medium">Periodo</th>
-                  <th className="py-2 px-3 font-medium text-right">Utilidad neta</th>
-                  <th className="py-2 px-3 font-medium text-right">Cuota fija</th>
-                  <th className="py-2 px-3 font-medium text-right">Cuota adaptada</th>
-                  <th className="py-2 px-3 font-medium text-right">Capital adapt.</th>
-                  <th className="py-2 px-3 font-medium text-right">Ratio adapt.</th>
-                  <th className="py-2 px-3 font-medium">Estado</th>
+                  <th className="py-2.5 px-3 font-mono font-medium">Periodo</th>
+                  <th className="py-2.5 px-3 font-mono font-medium text-right">Utilidad neta</th>
+                  <th className="py-2.5 px-3 font-mono font-medium text-right">Cuota fija</th>
+                  <th className="py-2.5 px-3 font-mono font-medium text-right">Cuota adaptada</th>
+                  <th className="py-2.5 px-3 font-mono font-medium text-right">Capital adapt.</th>
+                  <th className="py-2.5 px-3 font-mono font-medium text-right">Ratio adapt.</th>
+                  <th className="py-2.5 px-3 font-mono font-medium">Estado</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+              <tbody className="divide-y divide-[var(--border-hairline)] text-[var(--text-secondary)]">
                 {comparacion.adaptado.cuotas.map((c, idx) => {
                   const cf = comparacion.tradicional.cuotas[idx];
                   return (
-                    <tr key={c.numeroCuota} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50">
-                      <td className="py-1.5 px-3 font-mono text-slate-700 dark:text-slate-200">{c.etiquetaPeriodo}</td>
-                      <td className="py-1.5 px-3 font-mono tabular-nums text-right">
+                    <tr
+                      key={c.numeroCuota}
+                      className="hover:bg-[var(--bg-elevated)] transition-colors"
+                    >
+                      <td className="py-2 px-3 font-mono text-[var(--text-primary)] whitespace-nowrap">
+                        {c.etiquetaPeriodo}
+                      </td>
+                      <td className="py-2 px-3 font-mono tabular-nums text-right">
                         S/ {c.utilidadNetaPeriodo.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
                       </td>
-                      <td className="py-1.5 px-3 font-mono tabular-nums text-right">
+                      <td className="py-2 px-3 font-mono tabular-nums text-right">
                         S/ {(cf?.cuotaTotal ?? 0).toLocaleString("es-PE", { minimumFractionDigits: 2 })}
                       </td>
-                      <td className="py-1.5 px-3 font-mono tabular-nums text-right font-semibold text-[#0B1F3A] dark:text-teal-300">
+                      <td className="py-2 px-3 font-mono tabular-nums text-right font-semibold text-[var(--accent-teal)]">
                         S/ {c.cuotaTotal.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
                       </td>
-                      <td className="py-1.5 px-3 font-mono tabular-nums text-right">
-                        S/ {c.amortizacionCapital.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
+                      <td className="py-2 px-3 font-mono tabular-nums text-right">
+                        S/{" "}
+                        {c.amortizacionCapital.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
                       </td>
-                      <td className="py-1.5 px-3 font-mono tabular-nums text-right">
-                        {c.ratioCuotaUtilidad !== null ? `${(c.ratioCuotaUtilidad * 100).toFixed(1)}%` : "N/A"}
+                      <td className="py-2 px-3 font-mono tabular-nums text-right">
+                        {c.ratioCuotaUtilidad !== null
+                          ? `${(c.ratioCuotaUtilidad * 100).toFixed(1)}%`
+                          : "N/A"}
                       </td>
-                      <td className="py-1.5 px-3 font-medium">{c.estado}</td>
+                      <td className="py-2 px-3 font-medium text-[var(--text-primary)]">
+                        {c.estado}
+                      </td>
                     </tr>
                   );
                 })}
@@ -495,24 +612,35 @@ export function Step9Informe({
         </div>
 
         {/* Supuestos y limitaciones */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-[var(--text-secondary)] border-t border-[var(--border-hairline)] pt-6">
           <div>
-            <h4 className="font-bold text-[#0B1F3A] dark:text-white mb-1.5">Supuestos financieros aplicados</h4>
-            <ul className="space-y-1 list-disc pl-4">
+            <h4 className="font-semibold text-[var(--text-primary)] mb-2">
+              Supuestos financieros aplicados
+            </h4>
+            <ul className="space-y-1.5 list-disc pl-4">
               <li>TEA constante durante toda la vida del crédito; conversión base 360.</li>
               <li>Seguros calculados bajo interés simple base 360.</li>
               <li>Prelación estricta de pagos: 1. Seguros, 2. Intereses, 3. Capital.</li>
               <li>
                 Restricción verificada periodo a periodo: Cuota / Utilidad ≤{" "}
-                {(input.credito.productoConfig.factorMaximoCapacidadPago * 100).toFixed(0)}%.
+                <span className="font-mono tabular-nums">
+                  {(input.credito.productoConfig.factorMaximoCapacidadPago * 100).toFixed(0)}%
+                </span>
+                .
               </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-[#0B1F3A] dark:text-white mb-1.5">Limitaciones de información</h4>
-            <ul className="space-y-1 list-disc pl-4">
+            <h4 className="font-semibold text-[var(--text-primary)] mb-2">
+              Limitaciones de información
+            </h4>
+            <ul className="space-y-1.5 list-disc pl-4">
               <li>
-                Meses históricos registrados: {predictivo.mesesDisponiblesCount} de 12 (
+                Meses históricos registrados:{" "}
+                <span className="font-mono tabular-nums">
+                  {predictivo.mesesDisponiblesCount} de 12
+                </span>{" "}
+                (
                 {predictivo.usoReferenciaSintetica
                   ? "con ponderación de patrón sintético sectorial"
                   : "serie anual completa"}
@@ -523,8 +651,8 @@ export function Step9Informe({
                 climáticos ni predicciones reales.
               </li>
               <li>
-                Este documento proviene de un prototipo Cajathon 2026 y no representa una aprobación
-                crediticia automática.
+                Este documento proviene de un prototipo Cajathon 2026 y no representa una
+                aprobación crediticia automática.
               </li>
             </ul>
           </div>

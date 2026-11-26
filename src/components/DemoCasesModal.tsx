@@ -57,19 +57,19 @@ export function DemoCasesModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-[#060D18]/75 backdrop-blur-xs flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="demo-cases-title"
     >
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-4xl max-h-[88vh] flex flex-col overflow-hidden shadow-xl">
+      <div className="bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-xl border border-[var(--border-hairline)] w-full max-w-4xl max-h-[88vh] flex flex-col overflow-hidden shadow-2xl">
         {/* Cabecera */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
+        <div className="px-6 py-4 border-b border-[var(--border-hairline)] bg-[var(--bg-elevated)] flex items-center justify-between gap-4">
           <div>
-            <h2 id="demo-cases-title" className="text-lg font-bold text-[#0B1F3A] dark:text-white">
+            <h2 id="demo-cases-title" className="font-display text-lg font-semibold text-[var(--text-primary)]">
               Explorar casos de demostración
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
               Base sintética reproducible de 1,000 negocios hipotéticos · No corresponde a clientes reales
             </p>
           </div>
@@ -77,17 +77,17 @@ export function DemoCasesModal({
             type="button"
             onClick={onClose}
             aria-label="Cerrar selector de casos sintéticos"
-            className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-teal)]"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
         <div className="p-6 overflow-y-auto space-y-6">
           {/* Casos destacados rápidos */}
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3">
-              Casos rápidos por arquetipo
+            <p className="text-xs font-mono text-[var(--text-muted)] mb-3">
+              Arquetipos de referencia
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {featured.map((p) => (
@@ -95,33 +95,33 @@ export function DemoCasesModal({
                   key={p.id}
                   type="button"
                   onClick={() => onSelectProfile(p)}
-                  className="text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/50 hover:border-teal-600 dark:hover:border-teal-500 hover:bg-teal-50/30 dark:hover:bg-teal-950/30 transition-colors"
+                  className="text-left p-3.5 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-elevated)] hover:border-[var(--accent-teal)] hover:bg-[var(--accent-teal-soft)] transition-colors duration-150"
                 >
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                  <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] font-mono tabular-nums">
                     <span>{p.id}</span>
-                    <span>{p.estacionalidadNivel}</span>
+                    <span>Estac. {p.estacionalidadNivel}</span>
                   </div>
-                  <p className="text-sm font-semibold text-[#0B1F3A] dark:text-white mt-1 line-clamp-1">
+                  <p className="text-sm font-semibold text-[var(--text-primary)] mt-1 line-clamp-1">
                     {p.tituloCaso}
                   </p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{p.segmento}</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">{p.segmento}</p>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Buscador y filtros por segmento */}
-          <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+          <div className="space-y-3 pt-4 border-t border-[var(--border-hairline)]">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Buscar por código (SYN-0024), actividad o departamento..."
                   aria-label="Buscar perfil sintético"
-                  className="w-full pl-9 pr-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600"
+                  className="w-full pl-9 pr-3 py-2 text-sm bg-[var(--bg-canvas)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] border border-[var(--border-hairline)] rounded-lg focus:outline-none focus:border-[var(--accent-teal)]"
                 />
               </div>
               <select
@@ -130,7 +130,7 @@ export function DemoCasesModal({
                   setSelectedSegment(e.target.value as "Todos" | SegmentoSintetico)
                 }
                 aria-label="Filtrar por segmento sintético"
-                className="px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-600"
+                className="px-3 py-2 text-sm border border-[var(--border-hairline)] rounded-lg bg-[var(--bg-canvas)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-teal)]"
               >
                 {SEGMENTOS.map((seg) => (
                   <option key={seg} value={seg}>
@@ -143,9 +143,9 @@ export function DemoCasesModal({
             </div>
 
             {/* Tabla compacta */}
-            <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+            <div className="border border-[var(--border-hairline)] rounded-lg overflow-hidden">
               <table className="w-full text-left border-collapse text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+                <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border-hairline)] text-[var(--text-muted)]">
                   <tr>
                     <th className="py-2.5 px-3 font-medium">ID</th>
                     <th className="py-2.5 px-3 font-medium">Actividad y zona</th>
@@ -154,29 +154,29 @@ export function DemoCasesModal({
                     <th className="py-2.5 px-3 font-medium text-right">Acción</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-[var(--border-hairline)]">
                   {filtered.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
-                      <td className="py-2.5 px-3 font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                    <tr key={p.id} className="hover:bg-[var(--bg-elevated)] transition-colors">
+                      <td className="py-2.5 px-3 font-mono tabular-nums text-[var(--text-muted)] whitespace-nowrap">
                         {p.id}
                       </td>
                       <td className="py-2.5 px-3">
-                        <p className="font-medium text-slate-900 dark:text-slate-100">{p.tituloCaso}</p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        <p className="font-medium text-[var(--text-primary)]">{p.tituloCaso}</p>
+                        <p className="text-[11px] text-[var(--text-muted)]">
                           {p.etiquetaSintetica} · {p.resumenBreve}
                         </p>
                       </td>
-                      <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300 hidden md:table-cell">
+                      <td className="py-2.5 px-3 text-[var(--text-secondary)] hidden md:table-cell">
                         {p.segmento}
                       </td>
-                      <td className="py-2.5 px-3 font-mono tabular-nums text-right text-slate-900 dark:text-slate-100 whitespace-nowrap">
+                      <td className="py-2.5 px-3 font-mono tabular-nums text-right text-[var(--text-primary)] whitespace-nowrap">
                         S/ {p.input.credito.montoSolicitado.toLocaleString("es-PE")}
                       </td>
                       <td className="py-2.5 px-3 text-right">
                         <button
                           type="button"
                           onClick={() => onSelectProfile(p)}
-                          className="px-3 py-1.5 text-xs font-semibold text-teal-800 dark:text-teal-200 bg-teal-50 dark:bg-teal-950/70 hover:bg-teal-100 dark:hover:bg-teal-900/70 rounded-lg transition-colors whitespace-nowrap"
+                          className="px-3 py-1.5 text-xs font-semibold text-[var(--accent-teal)] bg-[var(--accent-teal-soft)] hover:opacity-85 rounded-md transition-opacity whitespace-nowrap"
                         >
                           Cargar caso
                         </button>
@@ -185,7 +185,7 @@ export function DemoCasesModal({
                   ))}
                   {filtered.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-slate-500 dark:text-slate-400">
+                      <td colSpan={5} className="py-8 text-center text-[var(--text-muted)]">
                         No se encontraron perfiles sintéticos con ese criterio.
                       </td>
                     </tr>
@@ -193,7 +193,7 @@ export function DemoCasesModal({
                 </tbody>
               </table>
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            <p className="text-[11px] text-[var(--text-muted)]">
               Mostrando hasta 30 resultados de {allProfiles.length} perfiles sintéticos reproducibles.
             </p>
           </div>

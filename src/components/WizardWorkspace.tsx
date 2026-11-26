@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, BookmarkCheck, Database, RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, BookmarkCheck, Check, Database, RotateCcw } from "lucide-react";
+import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { runExternalShockSimulation, runFullAnalysis } from "../engines/shockSimulator";
 import {
   AnalisisInput,
@@ -20,15 +21,15 @@ import { Step9Informe } from "./steps/Step9Informe";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 
 const STEPS = [
-  { id: 1, label: "Negocio" },
-  { id: 2, label: "Ventas" },
-  { id: 3, label: "Costos" },
-  { id: 4, label: "Capacidad" },
-  { id: 5, label: "Crédito" },
-  { id: 6, label: "Predictivo" },
-  { id: 7, label: "Cronogramas" },
-  { id: 8, label: "Escenarios" },
-  { id: 9, label: "Informe" },
+  { id: 1, num: "01", label: "Negocio" },
+  { id: 2, num: "02", label: "Ventas" },
+  { id: 3, num: "03", label: "Costos" },
+  { id: 4, num: "04", label: "Capacidad" },
+  { id: 5, num: "05", label: "Crédito" },
+  { id: 6, num: "06", label: "Predictivo" },
+  { id: 7, num: "07", label: "Cronogramas" },
+  { id: 8, num: "08", label: "Escenarios" },
+  { id: 9, num: "09", label: "Informe" },
 ] as const;
 
 interface WizardWorkspaceProps {
@@ -71,13 +72,18 @@ export function WizardWorkspace({
     "Generado por el Asesor de Negocios"
   );
   const [showSavedMenu, setShowSavedMenu] = useState(false);
+  const activeStepBtnRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     setMaxVisitedStep((prev) => Math.max(prev, currentStep));
     window.scrollTo({ top: 0 });
+    activeStepBtnRef.current?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
   }, [currentStep]);
 
-  // Limpiar simulación y errores previos si cambia el caso base
   useEffect(() => {
     setSimulacion(null);
     setErrors({});
@@ -158,272 +164,297 @@ export function WizardWorkspace({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
-      {/* Cabecera del espacio de análisis */}
-      <header className="no-print bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sm:sticky sm:top-0 z-30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-2.5">
-          <div className="flex items-center gap-3 min-w-0">
-            <button
-              type="button"
-              onClick={onGoLanding}
-              className="text-base sm:text-lg font-bold tracking-tight text-[#0B1F3A] dark:text-white whitespace-nowrap shrink-0"
-            >
-              NEGOVA.IA
-            </button>
-            <span className="text-slate-300 dark:text-slate-600 hidden sm:inline" aria-hidden="true">
-              /
-            </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 truncate hidden md:inline">
-              {input.idCaso} {input.esSintetico ? "· Perfil sintético" : "· Evaluación en curso"}
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <ThemeToggleButton theme={theme} onToggle={onToggleTheme} />
-
-            <button
-              type="button"
-              onClick={onOpenDemoCases}
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors whitespace-nowrap"
-            >
-              <Database className="w-3.5 h-3.5 shrink-0" />
-              <span className="sm:hidden">Casos demo</span>
-              <span className="hidden sm:inline">Explorar casos de demostración</span>
-            </button>
-
-            <div className="relative">
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen flex flex-col bg-[var(--bg-canvas)] text-[var(--text-primary)] transition-colors duration-200">
+        {/* Cabecera del espacio de análisis */}
+        <header className="no-print bg-[var(--bg-surface)] border-b border-[var(--border-hairline)] sm:sticky sm:top-0 z-30">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-2.5">
+            <div className="flex items-center gap-3 min-w-0">
               <button
                 type="button"
-                onClick={() => setShowSavedMenu((s) => !s)}
-                aria-expanded={showSavedMenu}
-                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors whitespace-nowrap"
+                onClick={onGoLanding}
+                className="font-display text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0"
               >
-                <BookmarkCheck className="w-3.5 h-3.5 shrink-0" />
-                Guardados ({savedCases.length})
+                NEGOVA.IA
               </button>
-
-              {showSavedMenu && (
-                <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-2 z-40">
-                  <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 px-2 py-1">
-                    Casos guardados localmente
-                  </p>
-                  {savedCases.length === 0 ? (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 px-2 py-3">
-                      Aún no hay casos guardados. Puedes guardar desde el Informe (Paso 9).
-                    </p>
-                  ) : (
-                    <div className="max-h-60 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
-                      {savedCases.map((c) => (
-                        <button
-                          key={c.id}
-                          type="button"
-                          onClick={() => {
-                            onLoadSavedCase(c);
-                            setEstadoComite(c.estadoComite);
-                            setShowSavedMenu(false);
-                          }}
-                          className="w-full text-left px-2.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                        >
-                          <p className="text-xs font-semibold text-[#0B1F3A] dark:text-slate-100 truncate">
-                            {c.input.negocio.nombreComercial}
-                          </p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                            {c.id} · {c.estadoComite}
-                          </p>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              <span className="text-[var(--border-strong)] hidden sm:inline" aria-hidden="true">
+                /
+              </span>
+              <span className="text-xs font-mono text-[var(--text-muted)] truncate hidden md:inline">
+                {input.idCaso} {input.esSintetico ? "· Perfil sintético" : "· Evaluación en curso"}
+              </span>
             </div>
 
-            <button
-              type="button"
-              onClick={onOpenIndicators}
-              className="hidden md:inline-flex px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-[#0B1F3A] dark:hover:text-white transition-colors whitespace-nowrap"
-            >
-              Indicadores
-            </button>
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <ThemeToggleButton theme={theme} onToggle={onToggleTheme} />
 
-            <button
-              type="button"
-              onClick={() => {
-                onResetBlank();
-                setErrors({});
-                onStepChange(1);
-              }}
-              aria-label="Reiniciar análisis nuevo"
-              title="Nuevo análisis en blanco"
-              className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Barra secuencial de progreso de 9 pasos */}
-        <nav
-          aria-label="Progreso del análisis"
-          className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 border-t border-slate-100 dark:border-slate-800 overflow-x-auto"
-        >
-          <ol className="flex items-center gap-1.5 min-w-max">
-            {STEPS.map((st) => {
-              const isCurrent = st.id === currentStep;
-              const isCompleted = st.id < currentStep;
-              const canJump = st.id <= maxVisitedStep || input.esSintetico;
-              return (
-                <li key={st.id}>
-                  <button
-                    type="button"
-                    disabled={!canJump}
-                    onClick={() => {
-                      if (!canJump) return;
-                      if (st.id > currentStep && !validateStep(currentStep)) return;
-                      setErrors({});
-                      onStepChange(st.id);
-                    }}
-                    className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                      isCurrent
-                        ? "bg-[#0B1F3A] dark:bg-teal-600 text-white font-semibold"
-                        : isCompleted
-                        ? "bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/60"
-                        : canJump
-                        ? "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                        : "text-slate-400 dark:text-slate-600 cursor-not-allowed"
-                    }`}
-                  >
-                    <span className="font-mono text-[11px]">{st.id}.</span>
-                    <span>{st.label}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
-      </header>
-
-      {/* Contenido de la etapa activa */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 lg:p-8 shadow-2xs">
-          {currentStep === 1 && (
-            <Step1Negocio
-              negocio={input.negocio}
-              onChange={(negocio) => {
-                setErrors({});
-                onUpdateInput({ ...input, negocio });
-              }}
-              errors={errors}
-            />
-          )}
-          {currentStep === 2 && (
-            <Step2Ventas
-              ventas={input.ventas}
-              onChange={(ventas) => {
-                setErrors({});
-                onUpdateInput({ ...input, ventas });
-              }}
-              onOpenDemoCases={onOpenDemoCases}
-              error={errors.ventas}
-            />
-          )}
-          {currentStep === 3 && (
-            <Step3Costos
-              costos={input.costos}
-              ventas={input.ventas}
-              formalidad={input.negocio.formalidad}
-              onChange={(costos) => {
-                setErrors({});
-                onUpdateInput({ ...input, costos });
-              }}
-              error={errors.costos}
-            />
-          )}
-          {currentStep === 4 && (
-            <Step4Capacidad
-              capacidad={input.capacidad}
-              formalidad={input.negocio.formalidad}
-              onChange={(capacidad) => onUpdateInput({ ...input, capacidad })}
-            />
-          )}
-          {currentStep === 5 && (
-            <Step5Credito
-              credito={input.credito}
-              onChange={(credito) => {
-                setErrors({});
-                onUpdateInput({ ...input, credito });
-              }}
-              error={errors.credito}
-            />
-          )}
-          {currentStep === 6 && (
-            <Step6Predictivo input={input} predictivo={predictivo} />
-          )}
-          {currentStep === 7 && (
-            <Step7Comparacion
-              comparacion={comparacion}
-              factorMaximo={input.credito.productoConfig.factorMaximoCapacidadPago}
-            />
-          )}
-          {currentStep === 8 && (
-            <Step8Simulacion
-              baselinePredictivo={predictivo}
-              simulacion={simulacion}
-              onRunSimulation={handleRunSimulation}
-              onClearSimulation={() => setSimulacion(null)}
-            />
-          )}
-          {currentStep === 9 && (
-            <Step9Informe
-              input={input}
-              predictivo={predictivo}
-              comparacion={comparacion}
-              simulacion={simulacion}
-              estadoComite={estadoComite}
-              onChangeEstadoComite={setEstadoComite}
-              onSaveCase={() => onSaveCase(estadoComite)}
-              savedNotification={savedNotification}
-            />
-          )}
-
-          {/* Navegación inferior de pasos */}
-          <div className="no-print mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
-            <button
-              type="button"
-              onClick={handlePrev}
-              disabled={currentStep === 1}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Regresar
-            </button>
-
-            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-              Paso {currentStep} de {STEPS.length}
-            </span>
-
-            {currentStep < 9 ? (
               <button
                 type="button"
-                onClick={handleNext}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#0B1F3A] dark:bg-teal-600 rounded-xl hover:bg-[#143058] dark:hover:bg-teal-500 transition-colors"
+                onClick={onOpenDemoCases}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[var(--accent-teal)] bg-[var(--accent-teal-soft)] border border-[var(--accent-teal)]/25 rounded-lg hover:opacity-85 transition-opacity whitespace-nowrap"
               >
-                Continuar
-                <ArrowRight className="w-4 h-4" />
+                <Database className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                <span className="sm:hidden">Casos demo</span>
+                <span className="hidden sm:inline">Explorar casos de demostración</span>
               </button>
-            ) : (
+
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowSavedMenu((s) => !s)}
+                  aria-expanded={showSavedMenu}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-surface)] border border-[var(--border-hairline)] hover:border-[var(--border-strong)] rounded-lg transition-colors whitespace-nowrap"
+                >
+                  <BookmarkCheck className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                  Guardados ({savedCases.length})
+                </button>
+
+                {showSavedMenu && (
+                  <div className="absolute right-0 mt-2 w-72 bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-xl shadow-xl p-2 z-40">
+                    <p className="text-[11px] font-mono text-[var(--text-muted)] px-2 py-1">
+                      Casos guardados localmente
+                    </p>
+                    {savedCases.length === 0 ? (
+                      <p className="text-xs text-[var(--text-muted)] px-2 py-3">
+                        Aún no hay casos guardados. Puedes guardar desde el Informe (Paso 9).
+                      </p>
+                    ) : (
+                      <div className="max-h-60 overflow-y-auto divide-y divide-[var(--border-hairline)]">
+                        {savedCases.map((c) => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => {
+                              onLoadSavedCase(c);
+                              setEstadoComite(c.estadoComite);
+                              setShowSavedMenu(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
+                          >
+                            <p className="text-xs font-semibold text-[var(--text-primary)] truncate">
+                              {c.input.negocio.nombreComercial}
+                            </p>
+                            <p className="text-[11px] text-[var(--text-muted)] truncate">
+                              {c.id} · {c.estadoComite}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <button
                 type="button"
                 onClick={onOpenIndicators}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-teal-900 dark:text-teal-200 bg-teal-50 dark:bg-teal-950/60 border border-teal-300 dark:border-teal-800 rounded-xl hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors"
+                className="hidden md:inline-flex px-2.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap"
               >
-                Ver Indicadores de validación
-                <ArrowRight className="w-4 h-4" />
+                Indicadores
               </button>
-            )}
+
+              <button
+                type="button"
+                onClick={() => {
+                  onResetBlank();
+                  setErrors({});
+                  onStepChange(1);
+                }}
+                aria-label="Reiniciar análisis nuevo"
+                title="Nuevo análisis en blanco"
+                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] rounded-lg transition-colors"
+              >
+                <RotateCcw className="w-4 h-4" aria-hidden="true" />
+              </button>
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+
+          {/* Barra secuencial de progreso de 9 pasos */}
+          <nav
+            aria-label="Progreso del análisis"
+            className="max-w-6xl mx-auto px-4 sm:px-6 border-t border-[var(--border-hairline)] overflow-x-auto"
+          >
+            <ol className="flex items-center gap-1 min-w-max">
+              {STEPS.map((st) => {
+                const isCurrent = st.id === currentStep;
+                const isCompleted = st.id < currentStep;
+                const canJump = st.id <= maxVisitedStep || input.esSintetico;
+                return (
+                  <li key={st.id}>
+                    <button
+                      ref={isCurrent ? activeStepBtnRef : null}
+                      type="button"
+                      disabled={!canJump}
+                      onClick={() => {
+                        if (!canJump) return;
+                        if (st.id > currentStep && !validateStep(currentStep)) return;
+                        setErrors({});
+                        onStepChange(st.id);
+                      }}
+                      className={`relative px-3 py-2.5 text-xs transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                        isCurrent
+                          ? "text-[var(--text-primary)] font-semibold"
+                          : isCompleted
+                          ? "text-[var(--accent-teal)] font-medium hover:bg-[var(--bg-elevated)]"
+                          : canJump
+                          ? "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                          : "text-[var(--text-muted)] opacity-50 cursor-not-allowed"
+                      }`}
+                    >
+                      <span className="font-mono text-[11px] tabular-nums">
+                        {isCompleted ? (
+                          <Check className="w-3 h-3 inline text-[var(--accent-teal)]" aria-hidden="true" />
+                        ) : (
+                          `${st.id}.`
+                        )}
+                      </span>
+                      <span>{st.label}</span>
+                      {isCurrent && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute bottom-0 left-2 right-2 h-0.5 bg-[var(--accent-teal)]"
+                        />
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
+        </header>
+
+        {/* Lienzo principal de la etapa activa */}
+        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 lg:py-10">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-xl p-6 sm:p-8 lg:p-10">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {currentStep === 1 && (
+                  <Step1Negocio
+                    negocio={input.negocio}
+                    onChange={(negocio) => {
+                      setErrors({});
+                      onUpdateInput({ ...input, negocio });
+                    }}
+                    errors={errors}
+                  />
+                )}
+                {currentStep === 2 && (
+                  <Step2Ventas
+                    ventas={input.ventas}
+                    onChange={(ventas) => {
+                      setErrors({});
+                      onUpdateInput({ ...input, ventas });
+                    }}
+                    onOpenDemoCases={onOpenDemoCases}
+                    error={errors.ventas}
+                  />
+                )}
+                {currentStep === 3 && (
+                  <Step3Costos
+                    costos={input.costos}
+                    ventas={input.ventas}
+                    formalidad={input.negocio.formalidad}
+                    onChange={(costos) => {
+                      setErrors({});
+                      onUpdateInput({ ...input, costos });
+                    }}
+                    error={errors.costos}
+                  />
+                )}
+                {currentStep === 4 && (
+                  <Step4Capacidad
+                    capacidad={input.capacidad}
+                    formalidad={input.negocio.formalidad}
+                    onChange={(capacidad) => onUpdateInput({ ...input, capacidad })}
+                  />
+                )}
+                {currentStep === 5 && (
+                  <Step5Credito
+                    credito={input.credito}
+                    onChange={(credito) => {
+                      setErrors({});
+                      onUpdateInput({ ...input, credito });
+                    }}
+                    error={errors.credito}
+                  />
+                )}
+                {currentStep === 6 && (
+                  <Step6Predictivo input={input} predictivo={predictivo} />
+                )}
+                {currentStep === 7 && (
+                  <Step7Comparacion
+                    comparacion={comparacion}
+                    factorMaximo={input.credito.productoConfig.factorMaximoCapacidadPago}
+                  />
+                )}
+                {currentStep === 8 && (
+                  <Step8Simulacion
+                    baselinePredictivo={predictivo}
+                    simulacion={simulacion}
+                    onRunSimulation={handleRunSimulation}
+                    onClearSimulation={() => setSimulacion(null)}
+                  />
+                )}
+                {currentStep === 9 && (
+                  <Step9Informe
+                    input={input}
+                    predictivo={predictivo}
+                    comparacion={comparacion}
+                    simulacion={simulacion}
+                    estadoComite={estadoComite}
+                    onChangeEstadoComite={setEstadoComite}
+                    onSaveCase={() => onSaveCase(estadoComite)}
+                    savedNotification={savedNotification}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Navegación inferior de pasos */}
+            <div className="no-print mt-10 pt-6 border-t border-[var(--border-hairline)] flex items-center justify-between gap-4">
+              <button
+                type="button"
+                onClick={handlePrev}
+                disabled={currentStep === 1}
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-surface)] border border-[var(--border-hairline)] hover:border-[var(--border-strong)] rounded-lg disabled:opacity-35 disabled:cursor-not-allowed transition-colors whitespace-nowrap shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+                Regresar
+              </button>
+
+              <span className="text-xs font-mono tabular-nums text-[var(--text-muted)]">
+                Paso {currentStep} de {STEPS.length}
+              </span>
+
+              {currentStep < 9 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-[var(--text-on-ink)] bg-[var(--bg-ink)] dark:bg-[var(--accent-teal)] dark:text-[#060D18] rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap shrink-0"
+                >
+                  Continuar
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onOpenIndicators}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-[var(--accent-teal)] bg-[var(--accent-teal-soft)] border border-[var(--accent-teal)]/30 rounded-lg hover:opacity-85 transition-opacity whitespace-nowrap shrink-0"
+                >
+                  Ver Indicadores de validación
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          </div>
+        </main>
+      </div>
+    </MotionConfig>
   );
 }

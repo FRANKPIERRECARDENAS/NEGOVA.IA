@@ -2,18 +2,148 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Public Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  color-scheme: light;
+  --bg-canvas: #F6F5F0;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #EDEAE2;
+  --bg-elevated: #FAF9F5;
+  --bg-ink: #0A1628;
+  --bg-ink-subtle: #11223B;
+
+  --text-primary: #0A1628;
+  --text-secondary: #414F63;
+  --text-muted: #68768A;
+  --text-on-ink: #F6F5F0;
+  --text-on-ink-muted: #A7B4C7;
+
+  --border-hairline: #DEDAD0;
+  --border-strong: #C3BEB1;
+  --border-ink: #1D304D;
+
+  --accent-teal: #0C7C7B;
+  --accent-teal-hover: #096261;
+  --accent-teal-soft: rgba(12, 124, 123, 0.10);
+  --accent-teal-ink: #2DD4BF;
+
+  --accent-positive: #15803D;
+  --accent-positive-soft: rgba(21, 128, 61, 0.10);
+
+  --accent-warning: #B45309;
+  --accent-warning-soft: rgba(180, 83, 9, 0.10);
+
+  --accent-risk: #BE123C;
+  --accent-risk-soft: rgba(190, 18, 60, 0.09);
+
+  --grid-line: rgba(10, 22, 40, 0.045);
+  --chart-grid: rgba(10, 22, 40, 0.09);
+  --chart-tick: #5E6C80;
+  --chart-bar-base: #94A3B8;
+  --chart-bar-secondary: #2B4C7E;
+  --chart-tooltip-bg: #0A1628;
+  --chart-tooltip-border: #233754;
+  --chart-tooltip-text: #F6F5F0;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg-canvas: #060D18;
+  --bg-surface: #0B1526;
+  --bg-subtle: #111F35;
+  --bg-elevated: #0E1B30;
+  --bg-ink: #0E1B30;
+  --bg-ink-subtle: #152642;
+
+  --text-primary: #F2F0EA;
+  --text-secondary: #A9B7CA;
+  --text-muted: #76879F;
+  --text-on-ink: #F2F0EA;
+  --text-on-ink-muted: #94A5BD;
+
+  --border-hairline: #1A2942;
+  --border-strong: #2B3F5E;
+  --border-ink: #243857;
+
+  --accent-teal: #2DD4BF;
+  --accent-teal-hover: #5EEAD4;
+  --accent-teal-soft: rgba(45, 212, 191, 0.12);
+  --accent-teal-ink: #2DD4BF;
+
+  --accent-positive: #4ADE80;
+  --accent-positive-soft: rgba(74, 222, 128, 0.12);
+
+  --accent-warning: #FBBF24;
+  --accent-warning-soft: rgba(251, 191, 36, 0.12);
+
+  --accent-risk: #FB7185;
+  --accent-risk-soft: rgba(251, 113, 133, 0.12);
+
+  --grid-line: rgba(242, 240, 234, 0.035);
+  --chart-grid: rgba(242, 240, 234, 0.08);
+  --chart-tick: #8B9CB3;
+  --chart-bar-base: #475569;
+  --chart-bar-secondary: #5A84B8;
+  --chart-tooltip-bg: #060D18;
+  --chart-tooltip-border: #2B3F5E;
+  --chart-tooltip-text: #F2F0EA;
 }
 
 @layer base {
   html {
-    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    font-family: var(--font-sans);
     scroll-behavior: smooth;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+  }
+
+  .dark body {
+    letter-spacing: 0.005em;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
   }
 
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+.bg-technical-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+@keyframes curveDraw {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-curve-draw {
+  stroke-dasharray: 1000;
+  animation: curveDraw 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -26,6 +156,6 @@
   }
   body {
     background: #ffffff !important;
-    color: #0f172a !important;
+    color: #0a1628 !important;
   }
 }

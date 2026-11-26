@@ -6,6 +6,9 @@ interface Step4CapacidadProps {
   onChange: (updated: CapacidadEconomica) => void;
 }
 
+const INPUT_CLASS =
+  "w-full h-11 px-3.5 text-sm font-mono tabular-nums bg-[var(--bg-canvas)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-lg focus:outline-none focus:border-[var(--accent-teal)] transition-colors";
+
 export function Step4Capacidad({
   capacidad,
   formalidad,
@@ -15,34 +18,40 @@ export function Step4Capacidad({
     formalidad === "Persona jurídica 100% formal (EE.FF. auditados)";
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-[#0B1F3A] dark:text-white">4. Capacidad económica</h2>
-        <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
+    <div className="space-y-8">
+      <div className="pb-5 border-b border-[var(--border-hairline)]">
+        <p className="text-xs font-mono text-[var(--accent-teal)]">Etapa 04 · Respaldo y cargas</p>
+        <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
+          4. Capacidad económica
+        </h2>
+        <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
           Diferencia las obligaciones del negocio de las cargas personales o familiares según el
           régimen del solicitante ({formalidad}).
         </p>
       </div>
 
-      {/* Nota explícita de cumplimiento ético y regulatorio */}
-      <div className="bg-slate-100 dark:bg-slate-800/70 rounded-xl px-4 py-3 text-xs text-slate-700 dark:text-slate-300">
-        Regla metodológica activa: <strong className="font-semibold text-[#0B1F3A] dark:text-white">no se solicita ni utiliza sexo ni edad</strong>{" "}
+      {/* Nota de cumplimiento ético */}
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-lg px-4 py-3 text-xs text-[var(--text-secondary)]">
+        Regla metodológica activa:{" "}
+        <strong className="font-semibold text-[var(--text-primary)]">
+          no se solicita ni utiliza sexo ni edad
+        </strong>{" "}
         del solicitante para predecir el ciclo económico ni determinar las cuotas del cronograma.
       </div>
 
       {esJuridicaFormal ? (
-        <div className="bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 rounded-xl p-4 space-y-4">
-          <div className="flex items-start justify-between gap-4">
+        <div className="bg-[var(--accent-teal-soft)] border border-[var(--accent-teal)]/30 rounded-lg p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-[#0B1F3A] dark:text-white">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">
                 Persona jurídica 100% formal
               </p>
-              <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
+              <p className="text-xs text-[var(--text-secondary)] mt-0.5">
                 Las finanzas corporativas se evalúan de forma independiente; no se incorporan
                 cargas familiares ni deudas personales en el flujo del negocio.
               </p>
             </div>
-            <label className="inline-flex items-center gap-2 text-xs font-semibold text-[#0B1F3A] dark:text-slate-200 shrink-0 cursor-pointer">
+            <label className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-primary)] shrink-0 cursor-pointer">
               <input
                 type="checkbox"
                 checked={capacidad.usaEstadosFinancierosAuditados}
@@ -52,7 +61,7 @@ export function Step4Capacidad({
                     usaEstadosFinancierosAuditados: e.target.checked,
                   })
                 }
-                className="w-4 h-4 accent-teal-700 dark:accent-teal-400"
+                className="w-4 h-4 accent-[var(--accent-teal)]"
               />
               Estados financieros auditados
             </label>
@@ -60,11 +69,11 @@ export function Step4Capacidad({
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label
             htmlFor="deudas-negocio"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Cuotas mensuales de deudas vigentes del negocio (S/)
           </label>
@@ -80,14 +89,14 @@ export function Step4Capacidad({
                 cuotasDeudasNegocioMensual: Math.max(0, Number(e.target.value)),
               })
             }
-            className="w-full px-3.5 py-2.5 text-sm font-mono tabular-nums bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className={INPUT_CLASS}
           />
         </div>
 
         <div>
           <label
             htmlFor="patrimonio-declarado"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Patrimonio neto o respaldo de activos del negocio (S/)
           </label>
@@ -103,7 +112,7 @@ export function Step4Capacidad({
                 patrimonioNetoDeclarado: Math.max(0, Number(e.target.value)),
               })
             }
-            className="w-full px-3.5 py-2.5 text-sm font-mono tabular-nums bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className={INPUT_CLASS}
           />
         </div>
 
@@ -112,7 +121,7 @@ export function Step4Capacidad({
             <div>
               <label
                 htmlFor="otras-fuentes"
-                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+                className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
               >
                 Otras fuentes de ingreso mensual verificables (S/)
               </label>
@@ -128,14 +137,14 @@ export function Step4Capacidad({
                     otrasFuentesIngresoMensual: Math.max(0, Number(e.target.value)),
                   })
                 }
-                className="w-full px-3.5 py-2.5 text-sm font-mono tabular-nums bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+                className={INPUT_CLASS}
               />
             </div>
 
             <div>
               <label
                 htmlFor="deudas-personales"
-                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+                className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
               >
                 Cuotas de otras deudas personales vigentes (S/)
               </label>
@@ -151,14 +160,14 @@ export function Step4Capacidad({
                     cuotasDeudasPersonalesMensual: Math.max(0, Number(e.target.value)),
                   })
                 }
-                className="w-full px-3.5 py-2.5 text-sm font-mono tabular-nums bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+                className={INPUT_CLASS}
               />
             </div>
 
             <div>
               <label
                 htmlFor="carga-familiar"
-                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+                className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
               >
                 Carga familiar y gastos esenciales del hogar (S/)
               </label>
@@ -174,7 +183,7 @@ export function Step4Capacidad({
                     cargaFamiliarMensual: Math.max(0, Number(e.target.value)),
                   })
                 }
-                className="w-full px-3.5 py-2.5 text-sm font-mono tabular-nums bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+                className={INPUT_CLASS}
               />
             </div>
           </>
@@ -183,7 +192,7 @@ export function Step4Capacidad({
         <div className={esJuridicaFormal ? "md:col-span-2" : ""}>
           <label
             htmlFor="obligaciones-desc"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Detalle de obligaciones financieras vigentes
           </label>
@@ -198,7 +207,7 @@ export function Step4Capacidad({
               })
             }
             placeholder="Ej. Crédito capital de trabajo vigente / sin deudas adicionales"
-            className="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className="w-full h-11 px-3.5 text-sm bg-[var(--bg-canvas)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] border border-[var(--border-hairline)] rounded-lg focus:outline-none focus:border-[var(--accent-teal)] transition-colors"
           />
         </div>
       </div>

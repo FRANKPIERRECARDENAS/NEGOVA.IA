@@ -21,6 +21,9 @@ const TIPOS_OPERACION: Array<{
   { tipo: "Servicios", detalle: "Prestación técnica, transporte, gastronomía u oficios" },
 ];
 
+const INPUT_CLASS =
+  "w-full h-11 px-3.5 text-sm bg-[var(--bg-canvas)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] border border-[var(--border-hairline)] rounded-lg focus:outline-none focus:border-[var(--accent-teal)] transition-colors";
+
 export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
   const zonaActual =
     ZONAS_GEOGRAFICAS.find((z) => z.departamento === negocio.departamento) ??
@@ -47,20 +50,23 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-xl font-bold text-[#0B1F3A] dark:text-white">1. Datos del negocio</h2>
-        <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
+      <div className="pb-5 border-b border-[var(--border-hairline)]">
+        <p className="text-xs font-mono text-[var(--accent-teal)]">Etapa 01 · Identificación</p>
+        <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
+          1. Datos del negocio
+        </h2>
+        <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
           Identifica la actividad económica, ubicación geográfica y condición de formalidad para
-          ajustar la estacionalidad sectorial y regional.
+          calibrar la estacionalidad sectorial y regional.
         </p>
       </div>
 
       {/* Nombre comercial y modelo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label
             htmlFor="nombre-comercial"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Nombre comercial o referencia del negocio
           </label>
@@ -70,17 +76,17 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
             value={negocio.nombreComercial}
             onChange={(e) => onChange({ ...negocio, nombreComercial: e.target.value })}
             placeholder="Ej. Bodega y Abarrotes San Martín"
-            className="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className={INPUT_CLASS}
           />
           {errors.nombreComercial && (
-            <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.nombreComercial}</p>
+            <p className="text-xs text-[var(--accent-risk)] mt-1.5">{errors.nombreComercial}</p>
           )}
         </div>
 
         <div>
           <label
             htmlFor="modelo-negocio"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Modelo de negocio
           </label>
@@ -90,20 +96,20 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
             value={negocio.modeloNegocio}
             onChange={(e) => onChange({ ...negocio, modeloNegocio: e.target.value })}
             placeholder="Ej. Venta minorista directa y pedidos por campaña"
-            className="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className={INPUT_CLASS}
           />
           {errors.modeloNegocio && (
-            <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.modeloNegocio}</p>
+            <p className="text-xs text-[var(--accent-risk)] mt-1.5">{errors.modeloNegocio}</p>
           )}
         </div>
       </div>
 
       {/* Sector y actividad */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label
             htmlFor="sector-economico"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Sector económico
           </label>
@@ -111,7 +117,7 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
             id="sector-economico"
             value={negocio.sector}
             onChange={(e) => handleSectorChange(e.target.value as SectorEconomico)}
-            className="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className={INPUT_CLASS}
           >
             {SECTORES_ECONOMICOS.map((sec) => (
               <option key={sec} value={sec}>
@@ -124,7 +130,7 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
         <div>
           <label
             htmlFor="actividad-especifica"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Actividad económica específica
           </label>
@@ -140,7 +146,7 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
                 onChange({ ...negocio, actividadEspecifica: e.target.value });
               }
             }}
-            className="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className={INPUT_CLASS}
           >
             {actividadesDisponibles.map((act) => (
               <option key={act} value={act}>
@@ -156,18 +162,18 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
               onChange={(e) => onChange({ ...negocio, actividadEspecifica: e.target.value })}
               placeholder="Especifica la actividad económica"
               aria-label="Actividad económica personalizada"
-              className="w-full mt-2 px-3.5 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+              className={`${INPUT_CLASS} mt-2`}
             />
           )}
           {errors.actividadEspecifica && (
-            <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.actividadEspecifica}</p>
+            <p className="text-xs text-[var(--accent-risk)] mt-1.5">{errors.actividadEspecifica}</p>
           )}
         </div>
       </div>
 
       {/* Tipo de operación */}
-      <div>
-        <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+      <div className="pt-6 border-t border-[var(--border-hairline)]">
+        <span className="block text-xs font-medium text-[var(--text-secondary)] mb-3">
           Tipo de operación
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -179,14 +185,14 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
                 type="button"
                 aria-pressed={active}
                 onClick={() => onChange({ ...negocio, tipoOperacion: item.tipo })}
-                className={`text-left p-3.5 rounded-xl border transition-colors ${
+                className={`text-left p-4 rounded-lg border transition-colors duration-150 ${
                   active
-                    ? "border-teal-700 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/50 text-[#0B1F3A] dark:text-white"
-                    : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:border-slate-300 dark:hover:border-slate-600 text-slate-700 dark:text-slate-200"
+                    ? "border-[var(--accent-teal)] bg-[var(--accent-teal-soft)] text-[var(--text-primary)]"
+                    : "border-[var(--border-hairline)] bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] text-[var(--text-secondary)]"
                 }`}
               >
-                <p className="text-sm font-semibold">{item.tipo}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-snug">{item.detalle}</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">{item.tipo}</p>
+                <p className="text-xs text-[var(--text-muted)] mt-1 leading-snug">{item.detalle}</p>
               </button>
             );
           })}
@@ -194,12 +200,12 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
       </div>
 
       {/* Ubicación geográfica */}
-      <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-4">
+      <div className="pt-6 border-t border-[var(--border-hairline)] space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label
               htmlFor="departamento"
-              className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
             >
               Departamento
             </label>
@@ -207,7 +213,7 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
               id="departamento"
               value={negocio.departamento}
               onChange={(e) => handleDepartamentoChange(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+              className={INPUT_CLASS}
             >
               {ZONAS_GEOGRAFICAS.map((z) => (
                 <option key={z.departamento} value={z.departamento}>
@@ -220,7 +226,7 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
           <div>
             <label
               htmlFor="provincia"
-              className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
             >
               Provincia
             </label>
@@ -228,7 +234,7 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
               id="provincia"
               value={negocio.provincia}
               onChange={(e) => onChange({ ...negocio, provincia: e.target.value })}
-              className="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+              className={INPUT_CLASS}
             >
               {zonaActual.provincias.map((prov) => (
                 <option key={prov} value={prov}>
@@ -241,7 +247,7 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
           <div>
             <label
               htmlFor="distrito-zona"
-              className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
             >
               Distrito o zona geográfica
             </label>
@@ -251,28 +257,30 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
               value={negocio.distritoZona}
               onChange={(e) => onChange({ ...negocio, distritoZona: e.target.value })}
               placeholder="Ej. Víctor Larco / Zona comercial"
-              className="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+              className={INPUT_CLASS}
             />
             {errors.distritoZona && (
-              <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{errors.distritoZona}</p>
+              <p className="text-xs text-[var(--accent-risk)] mt-1.5">{errors.distritoZona}</p>
             )}
           </div>
         </div>
 
-        <div className="bg-slate-100/80 dark:bg-slate-800/70 rounded-xl px-4 py-3 text-xs text-slate-700 dark:text-slate-300 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-lg px-4 py-3 text-xs text-[var(--text-secondary)] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span>
-            <strong className="font-semibold text-[#0B1F3A] dark:text-white">Factor geográfico ({zonaActual.departamento}):</strong>{" "}
+            <strong className="font-semibold text-[var(--text-primary)]">
+              Factor geográfico ({zonaActual.departamento}):
+            </strong>{" "}
             {zonaActual.descripcionEconomica}
           </span>
-          <span className="font-mono tabular-nums text-slate-600 dark:text-slate-400 shrink-0">
+          <span className="font-mono tabular-nums text-[var(--accent-teal)] shrink-0">
             Exposición climática: {Math.round(zonaActual.factorRiesgoClimatico * 100)}%
           </span>
         </div>
       </div>
 
       {/* Condición de formalidad */}
-      <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-        <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+      <div className="pt-6 border-t border-[var(--border-hairline)]">
+        <span className="block text-xs font-medium text-[var(--text-secondary)] mb-3">
           Condición de formalidad
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -283,10 +291,10 @@ export function Step1Negocio({ negocio, onChange, errors }: Step1NegocioProps) {
                 key={cond}
                 type="button"
                 onClick={() => onChange({ ...negocio, formalidad: cond })}
-                className={`text-left px-4 py-3 rounded-xl border text-sm transition-colors ${
+                className={`text-left px-4 py-3 rounded-lg border text-sm transition-colors duration-150 ${
                   active
-                    ? "border-teal-700 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/50 font-semibold text-[#0B1F3A] dark:text-white"
-                    : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:border-slate-300 dark:hover:border-slate-600 text-slate-700 dark:text-slate-200"
+                    ? "border-[var(--accent-teal)] bg-[var(--accent-teal-soft)] font-semibold text-[var(--text-primary)]"
+                    : "border-[var(--border-hairline)] bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] text-[var(--text-secondary)]"
                 }`}
               >
                 {cond}

@@ -7,6 +7,9 @@ interface Step5CreditoProps {
   error?: string;
 }
 
+const INPUT_CLASS =
+  "w-full h-11 px-3.5 text-sm font-mono tabular-nums bg-[var(--bg-canvas)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-lg focus:outline-none focus:border-[var(--accent-teal)] transition-colors";
+
 export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
   const cfg = credito.productoConfig;
 
@@ -27,7 +30,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
 
   const updateSeguroBien = (tipo: TipoSeguroOpcional) => {
     if (cfg.esHipotecario && tipo !== "Vivienda") {
-      return; // Vivienda es obligatorio para hipotecarios
+      return;
     }
     onChange({
       ...credito,
@@ -47,10 +50,13 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-[#0B1F3A] dark:text-white">5. Crédito solicitado</h2>
-        <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
+    <div className="space-y-8">
+      <div className="pb-5 border-b border-[var(--border-hairline)]">
+        <p className="text-xs font-mono text-[var(--accent-teal)]">Etapa 05 · Condiciones del préstamo</p>
+        <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
+          5. Crédito solicitado
+        </h2>
+        <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
           Define el producto de prueba, monto, plazo, TEA y parámetros configurables de capacidad
           de pago y seguros (base 360).
         </p>
@@ -58,7 +64,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
 
       {/* Selector de producto ilustrativo */}
       <div>
-        <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+        <span className="block text-xs font-medium text-[var(--text-secondary)] mb-3">
           Producto financiero (parámetros configurables de demostración)
         </span>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -69,25 +75,25 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                 key={prod.id}
                 type="button"
                 onClick={() => selectProduct(prod.id)}
-                className={`text-left p-4 rounded-xl border transition-colors ${
+                className={`text-left p-4 rounded-lg border transition-colors duration-150 ${
                   active
-                    ? "border-teal-700 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/50"
-                    : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:border-slate-300 dark:hover:border-slate-600"
+                    ? "border-[var(--accent-teal)] bg-[var(--accent-teal-soft)]"
+                    : "border-[var(--border-hairline)] bg-[var(--bg-elevated)] hover:border-[var(--border-strong)]"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm font-semibold text-[#0B1F3A] dark:text-white">{prod.nombre}</p>
-                  <span className="text-xs font-mono tabular-nums text-teal-800 dark:text-teal-300 shrink-0">
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">{prod.nombre}</p>
+                  <span className="text-xs font-mono tabular-nums text-[var(--accent-teal)] shrink-0">
                     Factor {prod.factorMaximoCapacidadPago.toFixed(2)}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">{prod.descripcion}</p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">{prod.restriccionesTexto}</p>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">{prod.descripcion}</p>
+                <p className="text-[11px] text-[var(--text-muted)] mt-1.5">{prod.restriccionesTexto}</p>
               </button>
             );
           })}
         </div>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-[11px] text-[var(--text-muted)] mt-2.5">
           Nota: Los factores 0.65 y 0.85 se incluyen únicamente como valores ilustrativos de
           productos de prueba y pueden configurarse libremente (siempre menor que 1). No son
           parámetros universales de Caja Trujillo.
@@ -95,17 +101,17 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
       </div>
 
       {error && (
-        <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 rounded-xl px-4 py-3 text-xs text-rose-800 dark:text-rose-200">
+        <div className="bg-[var(--accent-risk-soft)] border border-[var(--accent-risk)]/35 rounded-lg px-4 py-3 text-xs text-[var(--accent-risk)] font-medium">
           {error}
         </div>
       )}
 
       {/* Monto, plazo, TEA, frecuencia */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-6 border-t border-[var(--border-hairline)]">
         <div>
           <label
             htmlFor="monto-solicitado"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Monto solicitado (S/)
           </label>
@@ -121,14 +127,14 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                 montoSolicitado: Math.max(0, Number(e.target.value)),
               })
             }
-            className="w-full px-3.5 py-2.5 text-sm font-mono tabular-nums bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className={INPUT_CLASS}
           />
         </div>
 
         <div>
           <label
             htmlFor="plazo-meses"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Plazo ({cfg.plazoMinimoMeses}–{cfg.plazoMaximoMeses} meses)
           </label>
@@ -145,14 +151,14 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                 plazoMeses: Math.max(1, Math.round(Number(e.target.value))),
               })
             }
-            className="w-full px-3.5 py-2.5 text-sm font-mono tabular-nums bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className={INPUT_CLASS}
           />
         </div>
 
         <div>
           <label
             htmlFor="tea-porcentaje"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             TEA (%) · Tope BCRP {(cfg.teaMaximaBCRP * 100).toFixed(1)}%
           </label>
@@ -169,14 +175,14 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                 tea: Math.max(0.01, Number(e.target.value) / 100),
               })
             }
-            className="w-full px-3.5 py-2.5 text-sm font-mono tabular-nums bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400"
+            className={INPUT_CLASS}
           />
         </div>
 
         <div>
           <label
             htmlFor="frecuencia-dias"
-            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
             Periodicidad base de cuotas
           </label>
@@ -190,7 +196,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                 frecuenciaPagoDias: Number(e.target.value) as 30 | 45 | 60,
               })
             }
-            className="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-teal-600 dark:focus:border-teal-400 disabled:bg-slate-100 dark:disabled:bg-slate-900 dark:disabled:text-slate-500"
+            className="w-full h-11 px-3.5 text-sm bg-[var(--bg-canvas)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-lg focus:outline-none focus:border-[var(--accent-teal)] disabled:opacity-50"
           >
             <option value={30}>Mensual (días exactos o 30d)</option>
             <option value={45}>Cada 45 días (irregular)</option>
@@ -200,17 +206,17 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
       </div>
 
       {/* Parámetros configurables del producto y seguros */}
-      <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-5 space-y-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-lg p-5 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center justify-between mb-2">
               <label
                 htmlFor="factor-capacidad"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                className="text-xs font-medium text-[var(--text-secondary)]"
               >
-                Factor máximo de capacidad de pago (Cuota / Utilidad ≤ Factor)
+                Factor máximo de capacidad (Cuota / Utilidad ≤ Factor)
               </label>
-              <span className="text-sm font-bold font-mono tabular-nums text-teal-800 dark:text-teal-300">
+              <span className="text-sm font-semibold font-mono tabular-nums text-[var(--accent-teal)]">
                 {cfg.factorMaximoCapacidadPago.toFixed(2)}
               </span>
             </div>
@@ -230,16 +236,16 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                   },
                 })
               }
-              className="w-full accent-teal-700 dark:accent-teal-400"
+              className="w-full accent-[var(--accent-teal)]"
             />
-            <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            <div className="flex justify-between text-[11px] font-mono text-[var(--text-muted)] mt-1">
               <span>0.30 (conservador)</span>
               <span>0.95 (máximo &lt; 1.00)</span>
             </div>
           </div>
 
-          <div className="space-y-2.5">
-            <label className="flex items-center gap-2.5 text-xs font-medium text-slate-800 dark:text-slate-200 cursor-pointer">
+          <div className="space-y-3 flex flex-col justify-center">
+            <label className="flex items-center gap-2.5 text-xs font-medium text-[var(--text-primary)] cursor-pointer">
               <input
                 type="checkbox"
                 checked={credito.permitirPeriodosIrregulares}
@@ -249,12 +255,12 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                     permitirPeriodosIrregulares: e.target.checked,
                   })
                 }
-                className="w-4 h-4 accent-teal-700 dark:accent-teal-400"
+                className="w-4 h-4 accent-[var(--accent-teal)]"
               />
               Usar días exactos del calendario por periodo (Base 360)
             </label>
 
-            <label className="flex items-center gap-2.5 text-xs font-medium text-slate-800 dark:text-slate-200 cursor-pointer">
+            <label className="flex items-center gap-2.5 text-xs font-medium text-[var(--text-primary)] cursor-pointer">
               <input
                 type="checkbox"
                 checked={cfg.permiteCuotasVariables}
@@ -267,7 +273,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                     },
                   })
                 }
-                className="w-4 h-4 accent-teal-700 dark:accent-teal-400"
+                className="w-4 h-4 accent-[var(--accent-teal)]"
               />
               El producto permite cuotas variables adaptadas al ciclo
             </label>
@@ -275,9 +281,9 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
         </div>
 
         {/* Seguros */}
-        <div className="pt-4 border-t border-slate-200 dark:border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer">
+        <div className="pt-5 border-t border-[var(--border-hairline)] grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="space-y-2.5">
+            <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-primary)] cursor-pointer">
               <input
                 type="checkbox"
                 checked={cfg.desgravamenHabilitado}
@@ -290,7 +296,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                     },
                   })
                 }
-                className="w-4 h-4 accent-teal-700 dark:accent-teal-400"
+                className="w-4 h-4 accent-[var(--accent-teal)]"
               />
               Seguro de desgravamen (sobre saldo)
             </label>
@@ -298,7 +304,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
               <div>
                 <label
                   htmlFor="tasa-desgravamen"
-                  className="block text-[11px] text-slate-500 dark:text-slate-400 mb-1"
+                  className="block text-[11px] text-[var(--text-muted)] mb-1"
                 >
                   Tasa anual simple (%)
                 </label>
@@ -318,7 +324,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                       },
                     })
                   }
-                  className="w-full px-3 py-1.5 text-xs font-mono tabular-nums bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg"
+                  className="w-full h-9 px-3 text-xs font-mono tabular-nums bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-md focus:outline-none focus:border-[var(--accent-teal)]"
                 />
               </div>
             )}
@@ -327,7 +333,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
           <div>
             <label
               htmlFor="seguro-bien-tipo"
-              className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
             >
               Seguro de bien (Multirriesgo / Vivienda excluyentes)
             </label>
@@ -336,7 +342,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
               value={cfg.seguroBienTipo}
               disabled={cfg.esHipotecario}
               onChange={(e) => updateSeguroBien(e.target.value as TipoSeguroOpcional)}
-              className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg disabled:bg-slate-100 dark:disabled:bg-slate-900 dark:disabled:text-slate-500"
+              className="w-full h-9 px-3 text-xs bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-md disabled:opacity-50 focus:outline-none focus:border-[var(--accent-teal)]"
             >
               <option value="Ninguno">Sin seguro de bien</option>
               <option value="Multirriesgo">Seguro Multirriesgo (opcional)</option>
@@ -347,11 +353,11 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
           </div>
 
           {cfg.seguroBienTipo !== "Ninguno" && (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <div>
                 <label
                   htmlFor="valor-asegurado"
-                  className="block text-[11px] text-slate-500 dark:text-slate-400 mb-1"
+                  className="block text-[11px] text-[var(--text-muted)] mb-1"
                 >
                   Valor asegurado (S/)
                 </label>
@@ -370,13 +376,13 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                       },
                     })
                   }
-                  className="w-full px-2.5 py-1.5 text-xs font-mono tabular-nums bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg"
+                  className="w-full h-9 px-2.5 text-xs font-mono tabular-nums bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-md focus:outline-none focus:border-[var(--accent-teal)]"
                 />
               </div>
               <div>
                 <label
                   htmlFor="tasa-seguro-bien"
-                  className="block text-[11px] text-slate-500 dark:text-slate-400 mb-1"
+                  className="block text-[11px] text-[var(--text-muted)] mb-1"
                 >
                   Tasa anual (%)
                 </label>
@@ -396,7 +402,7 @@ export function Step5Credito({ credito, onChange, error }: Step5CreditoProps) {
                       },
                     })
                   }
-                  className="w-full px-2.5 py-1.5 text-xs font-mono tabular-nums bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg"
+                  className="w-full h-9 px-2.5 text-xs font-mono tabular-nums bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-md focus:outline-none focus:border-[var(--accent-teal)]"
                 />
               </div>
             </div>
