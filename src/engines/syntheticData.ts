@@ -366,3 +366,39 @@ export function getFeaturedDemoProfiles(): PerfilSintetico[] {
   if (partialCase) picks.push(partialCase);
   return picks;
 }
+
+export interface OfficialDemoCase {
+  codigo: "Caso A" | "Caso B" | "Caso C";
+  titulo: string;
+  subtitulo: string;
+  perfil: PerfilSintetico;
+}
+
+export function getOfficialDemoCases(): OfficialDemoCase[] {
+  const all = getSyntheticProfiles();
+  const casoA = all.find((p) => p.id === "SYN-0001") ?? all[0];
+  const casoB = all.find((p) => p.id === "SYN-0501") ?? all[500];
+  const casoC = all.find((p) => p.id === "SYN-0241") ?? all[240];
+
+  return [
+    {
+      codigo: "Caso A",
+      titulo: "Agrícola estacional",
+      subtitulo: "Alta estacionalidad en Piura · Cuota fija incumple, adaptado logra 0 incumplimientos",
+      perfil: casoA,
+    },
+    {
+      codigo: "Caso B",
+      titulo: "Negocio estable (imparcial)",
+      subtitulo: "Estabilidad suficiente donde la cuota fija tradicional resulta preferible o equivalente",
+      perfil: casoB,
+    },
+    {
+      codigo: "Caso C",
+      titulo: "Escenario adverso / Rechazo",
+      subtitulo: "Carga financiera exigente que evidencia inviabilidad transparente o estrés extremo",
+      perfil: casoC,
+    },
+  ];
+}
+

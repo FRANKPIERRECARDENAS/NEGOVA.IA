@@ -40,7 +40,7 @@ function createBlankInput(): AnalisisInput {
       costoAdquisicionProduccionPct: 58,
       costoAdquisicionMensualFijo: 9000,
       gastosOperativosMensuales: 2200,
-      gastosTributariosMensuales: 300,
+      gastosTributariosMensuales: 0,
       tasaTributariaPct: 1.5,
       costosEstacionalesPorMes: Array(12).fill(1.0),
     },

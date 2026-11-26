@@ -88,7 +88,7 @@ export function WizardWorkspace({
   useEffect(() => {
     setSimulacion(null);
     setErrors({});
-  }, [input.idCaso, input.credito.montoSolicitado, input.credito.plazoMeses, input.credito.tea]);
+  }, [input]);
 
   const { predictivo, comparacion } = useMemo(() => runFullAnalysis(input), [input]);
 

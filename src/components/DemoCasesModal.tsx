@@ -1,6 +1,10 @@
 import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
-import { getFeaturedDemoProfiles, getSyntheticProfiles } from "../engines/syntheticData";
+import {
+  getFeaturedDemoProfiles,
+  getOfficialDemoCases,
+  getSyntheticProfiles,
+} from "../engines/syntheticData";
 import { PerfilSintetico, SegmentoSintetico } from "../types/negova";
 import { BrandLogo } from "./BrandLogo";
 
@@ -28,6 +32,7 @@ export function DemoCasesModal({
   const [query, setQuery] = useState("");
 
   const allProfiles = useMemo(() => getSyntheticProfiles(), []);
+  const officialCases = useMemo(() => getOfficialDemoCases(), []);
   const featured = useMemo(() => getFeaturedDemoProfiles(), []);
 
   const segmentCounts = useMemo(() => {
@@ -48,7 +53,8 @@ export function DemoCasesModal({
           p.id.toLowerCase().includes(q) ||
           p.tituloCaso.toLowerCase().includes(q) ||
           p.input.negocio.departamento.toLowerCase().includes(q) ||
-          p.input.negocio.sector.toLowerCase().includes(q)
+          p.input.negocio.sector.toLowerCase().includes(q) ||
+          p.input.negocio.actividadEspecifica.toLowerCase().includes(q)
         );
       })
       .slice(0, 30);
@@ -69,11 +75,15 @@ export function DemoCasesModal({
           <div className="flex items-center gap-3">
             <BrandLogo size="md" />
             <div>
-              <h2 id="demo-cases-title" className="font-display text-lg font-semibold text-[var(--text-primary)]">
+              <h2
+                id="demo-cases-title"
+                className="font-display text-lg font-semibold text-[var(--text-primary)]"
+              >
                 Explorar casos de demostración
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Base sintética reproducible de 1,000 negocios hipotéticos · No corresponde a clientes reales
+                Base sintética reproducible de 1,000 negocios hipotéticos (semilla 20260501) · No
+                corresponde a clientes reales
               </p>
             </div>
           </div>
@@ -88,10 +98,38 @@ export function DemoCasesModal({
         </div>
 
         <div className="p-6 overflow-y-auto space-y-6">
-          {/* Casos destacados rápidos */}
+          {/* 3 Casos Oficiales de Demostración */}
           <div>
+            <p className="text-xs font-mono text-[var(--accent-teal)] mb-2.5">
+              3 Casos oficiales de demostración (Cajathon 2026)
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {officialCases.map((item) => (
+                <button
+                  key={item.codigo}
+                  type="button"
+                  onClick={() => onSelectProfile(item.perfil)}
+                  className="text-left p-4 rounded-xl border border-[var(--accent-teal)]/35 bg-[var(--accent-teal-soft)] hover:border-[var(--accent-teal)] transition-colors"
+                >
+                  <div className="flex items-center justify-between text-[11px] font-mono">
+                    <span className="font-semibold text-[var(--accent-teal)]">{item.codigo}</span>
+                    <span className="text-[var(--text-muted)]">{item.perfil.id}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-[var(--text-primary)] mt-1">
+                    {item.titulo}
+                  </p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">
+                    {item.subtitulo}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Arquetipos rápidos */}
+          <div className="pt-4 border-t border-[var(--border-hairline)]">
             <p className="text-xs font-mono text-[var(--text-muted)] mb-3">
-              Arquetipos de referencia
+              Arquetipos de referencia por segmento
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {featured.map((p) => (
@@ -118,7 +156,10 @@ export function DemoCasesModal({
           <div className="space-y-3 pt-4 border-t border-[var(--border-hairline)]">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
+                <Search
+                  className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2"
+                  aria-hidden="true"
+                />
                 <input
                   type="text"
                   value={query}

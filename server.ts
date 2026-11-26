@@ -12,62 +12,54 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "256kb" }));
 
-interface ExplainRequestBody {
-  negocio?: {
-    sector?: string;
-    actividad?: string;
-    modelo?: string;
-    zona?: string;
-    tipoOperacion?: string;
-    formalidad?: string;
-  };
-  predictivo?: {
-    nivelConfianza?: number;
-    mesesPico?: string[];
-    mesesBajos?: string[];
-    tendencia?: string;
-    volatilidad?: number;
-    factores?: string[];
-    utilidadNetaPromedio?: number;
-  };
-  comparacion?: {
-    montoSolicitado?: number;
-    plazoMeses?: number;
-    tea?: number;
-    factorCapacidad?: number;
-    tradicional?: {
-      viable?: boolean;
-      costoTotal?: number;
-      interesesTotales?: number;
-      segurosTotales?: number;
-      tcea?: number | null;
-      incumplimientos?: number;
-      riesgos?: number;
-    };
-    adaptado?: {
-      viable?: boolean;
-      costoTotal?: number;
-      interesesTotales?: number;
-      segurosTotales?: number;
-      tcea?: number | null;
-      incumplimientos?: number;
-      riesgos?: number;
-      cuotaMinima?: number;
-      cuotaMaxima?: number;
-    };
-    diferenciaCostos?: number;
-  };
-  simulacion?: {
-    activa?: boolean;
-    fenomeno?: string;
-    intensidad?: string;
-    impactoVentasPct?: number;
-    impactoUtilidadPct?: number;
-    incumplimientosFijo?: number;
-    incumplimientosAdaptado?: number;
-  } | null;
+// Rate limiter simple en memoria por IP (máx 30 solicitudes / minuto)
+const rateMap = new Map<string, { count: number; resetAt: number }>();
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateMap.set(ip, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (entry.count >= 30) {
+    return false;
+  }
+  entry.count++;
+  return true;
+}
+
+const REQUIRED_EXPLAIN_FIELDS = [
+  "explicacionEstacionalidad",
+  "justificacionCuotas",
+  "comparacionPlanes",
+  "resumenRiesgos",
+  "conclusionComite",
+  "explicacionSencilla",
+] as const;
+
+const FORBIDDEN_APPROVAL_PATTERNS = [
+  /aprobado\s+automáticamente/i,
+  /crédito\s+aprobado\s+definitivamente/i,
+  /desembolso\s+autorizado\s+por\s+ia/i,
+];
+
+function validateGeminiExplanation(raw: unknown): Record<string, string> | null {
+  if (!raw || typeof raw !== "object") return null;
+  const obj = raw as Record<string, unknown>;
+  const clean: Record<string, string> = {};
+  for (const field of REQUIRED_EXPLAIN_FIELDS) {
+    const val = obj[field];
+    if (typeof val !== "string" || val.trim().length < 15) {
+      return null;
+    }
+    if (FORBIDDEN_APPROVAL_PATTERNS.some((re) => re.test(val))) {
+      return null;
+    }
+    clean[field] = val.trim();
+  }
+  return clean;
 }
 
 function getGeminiClient(): GoogleGenAI | null {
@@ -86,7 +78,16 @@ function getGeminiClient(): GoogleGenAI | null {
 }
 
 app.post("/api/explain", async (req, res) => {
-  const payload = req.body as ExplainRequestBody;
+  const clientIp = req.ip || req.socket.remoteAddress || "local";
+  if (!checkRateLimit(clientIp)) {
+    res.status(429).json({
+      error: "Límite de solicitudes excedido temporalmente. Se utilizará la explicación analítica local.",
+      fallbackRequired: true,
+    });
+    return;
+  }
+
+  const payload = req.body as Record<string, unknown> | undefined;
   if (!payload || !payload.negocio || !payload.predictivo || !payload.comparacion) {
     res.status(400).json({
       error: "Datos estructurados incompletos para generar la explicación.",
@@ -110,7 +111,7 @@ app.post("/api/explain", async (req, res) => {
     "1. NUNCA inventes ingresos, tasas, montos, TCEA, fechas ni aprobaciones.",
     "2. NUNCA modifiques ni recalcules las cifras recibidas. Usa exactamente los números provistos.",
     "3. NUNCA apruebes ni rechaces el crédito de forma definitiva; indica que la recomendación aporta evidencia y la decisión corresponde al Comité.",
-    "4. Si el cronograma adaptado tiene un costo financiero mayor que el tradicional o si alguno resulta no viable, indícalo con total transparencia.",
+    "4. Si el cronograma adaptado tiene un costo financiero mayor que el tradicional, si el tradicional es mejor/equivalente, o si alguno resulta no viable, indícalo con total transparencia.",
     "5. Si hay una simulación de fenómeno externo, aclara que corresponde a un escenario hipotético de estrés y no a una predicción real.",
     "6. No menciones datos reales de Caja Trujillo ni afirmes que el modelo fue entrenado con cartera real.",
   ].join("\n");
@@ -142,37 +143,36 @@ app.post("/api/explain", async (req, res) => {
               properties: {
                 explicacionEstacionalidad: {
                   type: Type.STRING,
-                  description: "Por qué el negocio tiene determinados meses de mayores y menores ingresos según los factores calculados.",
+                  description:
+                    "Por qué el negocio tiene determinados meses de mayores y menores ingresos según los factores calculados.",
                 },
                 justificacionCuotas: {
                   type: Type.STRING,
-                  description: "Por qué las cuotas propuestas suben o bajan según la utilidad neta estimada y el factor de capacidad.",
+                  description:
+                    "Por qué las cuotas propuestas suben o bajan según la utilidad neta estimada y el factor de capacidad.",
                 },
                 comparacionPlanes: {
                   type: Type.STRING,
-                  description: "Comparación objetiva entre el plan tradicional fijo y el plan adaptado (incluyendo diferencia de costos e incumplimientos).",
+                  description:
+                    "Comparación objetiva entre el plan tradicional fijo y el plan adaptado (incluyendo diferencia de costos e incumplimientos).",
                 },
                 resumenRiesgos: {
                   type: Type.STRING,
-                  description: "Resumen de riesgos operativos, de estacionalidad, confianza de datos y sensibilidad a escenarios externos.",
+                  description:
+                    "Resumen de riesgos operativos, de estacionalidad, confianza de datos y sensibilidad a escenarios externos.",
                 },
                 conclusionComite: {
                   type: Type.STRING,
-                  description: "Conclusión técnica objetiva para el Asesor de Riesgos y el Comité (sin aprobar automáticamente).",
+                  description:
+                    "Conclusión técnica objetiva para el Asesor de Riesgos y el Comité (sin aprobar automáticamente).",
                 },
                 explicacionSencilla: {
                   type: Type.STRING,
-                  description: "Explicación clara y sin tecnicismos para explicar el plan de pagos al microempresario.",
+                  description:
+                    "Explicación clara y sin tecnicismos para explicar el plan de pagos al microempresario.",
                 },
               },
-              required: [
-                "explicacionEstacionalidad",
-                "justificacionCuotas",
-                "comparacionPlanes",
-                "resumenRiesgos",
-                "conclusionComite",
-                "explicacionSencilla",
-              ],
+              required: [...REQUIRED_EXPLAIN_FIELDS],
             },
           },
         });
@@ -198,7 +198,15 @@ app.post("/api/explain", async (req, res) => {
       return;
     }
 
-    const parsed = JSON.parse(text);
+    const parsed = validateGeminiExplanation(JSON.parse(text));
+    if (!parsed) {
+      res.status(502).json({
+        error: "La respuesta de Gemini no cumplió con las validaciones de contenido y esquema.",
+        fallbackRequired: true,
+      });
+      return;
+    }
+
     res.json({
       source: "gemini",
       model: "gemini-4-hydrogen",

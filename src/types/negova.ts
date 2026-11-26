@@ -106,6 +106,11 @@ export interface AnalisisInput {
   credito: SolicitudCredito;
 }
 
+export type MetodoPredictivoId =
+  | "Descomposición Híbrida + Holt Amortiguado"
+  | "Regresión Temporal Regularizada + Estacionalidad Actividad/Zona"
+  | "Referencia Estacional (Actividad × Zona) Escalada";
+
 export interface ProyeccionPeriodo {
   periodo: number;
   mesCalendarioIndice: number; // 0..11
@@ -113,16 +118,32 @@ export interface ProyeccionPeriodo {
   fechaVencimiento: string;
   diasPeriodo: number;
   ventasEsperadas: number;
-  ventasRangoInferior: number;
-  ventasRangoSuperior: number;
+  ventasRangoInferior: number; // Escenario Conservador (cuantil ~P10, z=1.2816)
+  ventasRangoSuperior: number; // Escenario Favorable (cuantil ~P90, z=1.2816)
   costosEsperados: number;
   gastosOperativosYTributarios: number;
   utilidadNetaOperativa: number;
   otrosIngresosNetos: number;
   obligacionesYCarga: number;
-  utilidadNetaDisponible: number;
+  utilidadNetaDisponible: number; // Escenario Base
+  utilidadConservadora: number; // Escenario Conservador neto
+  utilidadFavorable: number; // Escenario Favorable neto
   indiceEstacional: number;
+  indiceActividadAplicado: number;
   clasificacionCapacidad: "Alta" | "Media" | "Baja";
+}
+
+export interface TrazabilidadPredictiva {
+  metodoSeleccionado: MetodoPredictivoId;
+  justificacionMetodo: string;
+  pesoHistorialIndividual: number; // 0..0.75
+  pesoReferenciaSectorActividadZona: number;
+  sigmaResidualPct: number;
+  factorIncertidumbreBase: number;
+  diferenciaActividadVsSectorPct: number;
+  procedenciaDatos: string;
+  supuestosAplicados: string[];
+  avisoNoGarantia: string;
 }
 
 export interface ResultadoPredictivo {
@@ -130,18 +151,36 @@ export interface ResultadoPredictivo {
   tendencia: "Creciente" | "Estable" | "Decreciente";
   pendienteMensualPct: number;
   volatilidadPct: number;
-  nivelConfianza: number; // 0..100
+  nivelConfianza: number; // 0..100 (índice compuesto de completitud documental y estabilidad)
   mesesDisponiblesCount: number;
   usoReferenciaSintetica: boolean;
   mesesMayorCapacidad: string[];
   mesesMenorCapacidad: string[];
   utilidadNetaPromedio: number;
+  utilidadConservadoraPromedio: number;
+  utilidadFavorablePromedio: number;
   ventasTotalesProyectadas: number;
   factoresExplicativos: string[];
   advertenciasDatos: string[];
+  trazabilidad: TrazabilidadPredictiva;
 }
 
 export type EstadoCumplimiento = "Cumple" | "Riesgo" | "Incumple";
+
+export interface TrazabilidadCuota {
+  motivoImporte: string;
+  ingresosProyectados: number;
+  costosYObligacionesDescontadas: number;
+  utilidadNetaEstimada: number;
+  capacidadMaximaPermitida: number;
+  restriccionVerificada: string;
+  sensibilidadCaida20Pct: {
+    utilidadEstresada20: number;
+    capacidadMaximaEstresada20: number;
+    nuevoRatioSiCae20Pct: number | null;
+    estadoSiCae20Pct: EstadoCumplimiento;
+  };
+}
 
 export interface CuotaCronograma {
   numeroCuota: number;
@@ -163,6 +202,35 @@ export interface CuotaCronograma {
   estado: EstadoCumplimiento;
   seguroPendienteNoCapitalizado: number;
   interesPendienteNoCapitalizado: number;
+  trazabilidad: TrazabilidadCuota;
+}
+
+export interface DesgloseFuncionObjetivo {
+  formulaTexto: string;
+  valorTotalObjetivo: number;
+  penalizacionIncumplimientos: number;
+  variabilidadCuotasCV: number;
+  variabilidadRatioCV: number;
+  concentracionMaxAmortPct: number;
+  costoFinancieroSobreMonto: number;
+  desviacionSostenible: number;
+  iteracionesOptimizador: number;
+}
+
+export interface ReglaValidacionIndependiente {
+  codigo: string;
+  nombre: string;
+  aprobada: boolean;
+  detalle: string;
+}
+
+export interface ResultadoValidacionIndependiente {
+  valido: boolean;
+  errores: string[];
+  maxDesviacionCentavos: number;
+  saldoFinalVerificado: number;
+  totalCapitalVerificado: number;
+  reglasVerificadas: ReglaValidacionIndependiente[];
 }
 
 export interface CronogramaCalculado {
@@ -182,11 +250,14 @@ export interface CronogramaCalculado {
   cuotaMinima: number;
   cuotaMaxima: number;
   cuotaPromedio: number;
+  variabilidadCuotasCV: number; // Coeficiente de variación (%)
   periodosCumplen: number;
   periodosRiesgo: number;
   periodosIncumplen: number;
   ratioMaximoObservado: number;
   ratioPromedio: number;
+  optimizadorDetalle?: DesgloseFuncionObjetivo;
+  validacionIndependiente: ResultadoValidacionIndependiente;
 }
 
 export interface ComparacionCronogramas {
@@ -196,6 +267,8 @@ export interface ComparacionCronogramas {
   diferenciaIntereses: number;
   diferenciaIncumplimientos: number; // tradicional.periodosIncumplen - adaptado.periodosIncumplen
   adaptadoEsMasCaro: boolean;
+  mejorOpcion: "Adaptado" | "Tradicional" | "Equivalente" | "Ninguno";
+  motivoSeleccion: string;
   resumenValor: string;
 }
 
@@ -209,14 +282,30 @@ export type TipoFenomenoExterno =
 
 export type IntensidadFenomeno = "Moderado" | "Severo" | "Extremo";
 
+export type ModoEvaluacionShock = "preventivo" | "sobrevenido";
+
 export interface ParametrosFenomeno {
   fenomeno: TipoFenomenoExterno;
   intensidad: IntensidadFenomeno;
+  mesInicioPeriodo?: number; // 1-indexed period start (default 1)
+  duracionMeses?: number; // 1..12 (default 4)
+  magnitudAdicionalPct?: number; // -20..+30 fine tuning (default 0)
+  modoEvaluacion?: ModoEvaluacionShock; // default "preventivo"
+}
+
+export interface EvaluacionCronogramaSobrevenido {
+  incumplimientosFijoOriginal: number;
+  incumplimientosAdaptadoOriginal: number;
+  periodosCriticosFijoOriginal: string[];
+  periodosCriticosAdaptadoOriginal: string[];
+  resumen: string;
 }
 
 export interface ResultadoSimulacionExterna {
   esEscenarioHipotetico: true;
-  parametros: ParametrosFenomeno;
+  parametros: Required<ParametrosFenomeno>;
+  factorGeograficoAplicado: number;
+  sensibilidadSectorialAplicada: number;
   impactoVentasPct: number;
   impactoCostosPct: number;
   impactoUtilidadPct: number;
@@ -225,6 +314,7 @@ export interface ResultadoSimulacionExterna {
   comparacionEstresada: ComparacionCronogramas;
   cuotasQueIncumplenFijo: number;
   cuotasQueIncumplenAdaptado: number;
+  sobrevenido: EvaluacionCronogramaSobrevenido;
 }
 
 export interface ExplicacionComite {
@@ -236,6 +326,7 @@ export interface ExplicacionComite {
   resumenRiesgos: string;
   conclusionComite: string;
   explicacionSencilla: string;
+  trazabilidadCalculos?: string;
 }
 
 export type EstadoComite =
@@ -257,6 +348,92 @@ export interface PerfilSintetico {
   ventasFuturasRealesSinteticas: number[];
 }
 
+export interface BacktestSegmentoMetrics {
+  segmento: SegmentoSintetico;
+  evaluaciones: number;
+  maeNegova: number;
+  wapeNegovaPct: number;
+  rmseNegova: number;
+  sesgoPct: number;
+  cobertura80Pct: number;
+  wapeIngenuoPct: number;
+  wapeEstacionalPuroPct: number;
+  esPeorRendimiento: boolean;
+}
+
+export interface BacktestTemporalResumen {
+  horizonteMeses: number;
+  origenesEvaluados: number[];
+  totalObservacionesOutOfSample: number;
+  maeGlobal: number;
+  wapeGlobalPct: number;
+  rmseGlobal: number;
+  sesgoGlobalPct: number;
+  coberturaIntervalo80Pct: number;
+  wapeBaselineIngenuoPct: number;
+  wapeBaselineEstacionalPct: number;
+  peorSegmento: SegmentoSintetico;
+  notaMetodologicaBacktest: string;
+  porSegmento: BacktestSegmentoMetrics[];
+}
+
+export interface ExperimentoGrupoMetrics {
+  clave: string;
+  perfiles: number;
+  viabilidadTradicionalPct: number;
+  viabilidadAdaptadoPct: number;
+  cumplimientoCapacidadAdaptadoPct: number;
+  validacionMatematicaPct: number;
+  incumplimientosTradicional: number;
+  incumplimientosAdaptado: number;
+  variabilidadCVAdaptadoPct: number;
+  deltaCostoPromedio: number;
+  adaptadoMasBaratoPct: number;
+  tradicionalMejorOIgualPct: number;
+  noViablesAdaptadoCount: number;
+}
+
+export interface SensibilidadParametroRow {
+  escenario: string;
+  factorCapacidad: number;
+  caidaIngresosPct: number;
+  viabilidadTradicionalPct: number;
+  viabilidadAdaptadoPct: number;
+  incumplimientosTradicional: number;
+  incumplimientosAdaptado: number;
+}
+
+export interface ExperimentoReproducibleResumen {
+  version: string;
+  fechaEjecucionIso: string;
+  semilla: number;
+  totalPerfilesEvaluados: number;
+  tiempoTotalExperimentoMs: number;
+  tiempoAnalisisPredictivoMs: number;
+  tiempoOptimizacionMs: number;
+  porcentajeCronogramasMatematicamenteValidos: number;
+  porcentajeCumplimientoCapacidadAdaptado: number;
+  distribucionDeltaCosto: {
+    min: number;
+    p25: number;
+    medianaP50: number;
+    p75: number;
+    max: number;
+  };
+  casosFallidosAdaptado: {
+    totalNoViables: number;
+    porSaldoPendiente: number;
+    porDeficitInteresesSeguros: number;
+    porReglaProducto: number;
+  };
+  porSegmento: ExperimentoGrupoMetrics[];
+  porActividadTop: ExperimentoGrupoMetrics[];
+  porEstacionalidad: ExperimentoGrupoMetrics[];
+  porVolatilidad: ExperimentoGrupoMetrics[];
+  analisisSensibilidad: SensibilidadParametroRow[];
+  limitacionesExperimento: string[];
+}
+
 export interface IndicadoresValidacion {
   totalPerfilesBase: number;
   distribucionSegmentos: Array<{ segmento: SegmentoSintetico; cantidad: number }>;
@@ -266,10 +443,13 @@ export interface IndicadoresValidacion {
   porcentajeCronogramasFijosViables: number;
   incumplimientosTradicional: number;
   incumplimientosAdaptado: number;
+  casosNoViablesAdaptadoHoldout: number;
   maePredictivo: number;
   wapePredictivoPct: number;
   reduccionRatioPromedioPct: number;
   notaMetodologica: string;
+  backtestTemporal: BacktestTemporalResumen;
+  experimentoCompleto: ExperimentoReproducibleResumen;
 }
 
 export interface CasoGuardado {

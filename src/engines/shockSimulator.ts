@@ -1,11 +1,12 @@
 import {
   AnalisisInput,
-  IntensidadFenomeno,
   ParametrosFenomeno,
   ResultadoPredictivo,
   ResultadoSimulacionExterna,
   TipoFenomenoExterno,
+  IntensidadFenomeno,
 } from "../types/negova";
+import { ZONAS_GEOGRAFICAS } from "./catalogs";
 import { compareSchedules } from "./financialEngine";
 import { runPredictiveEngine } from "./predictiveEngine";
 
@@ -20,7 +21,7 @@ const SHOCK_MATRIX: Record<TipoFenomenoExterno, ShockConfig> = {
   "Fenómeno El Niño": {
     salesDropBase: 0.24,
     costIncreaseBase: 0.14,
-    affectedMonths: [0, 1, 2, 3, 11], // verano y lluvias
+    affectedMonths: [0, 1, 2, 3, 11],
     climateMultiplierSensitivity: true,
   },
   Inundaciones: {
@@ -69,44 +70,122 @@ export function runExternalShockSimulation(
   const cfg = SHOCK_MATRIX[parametros.fenomeno];
   const mult = INTENSITY_MULTIPLIER[parametros.intensidad];
 
-  // Sensibilidad sectorial explícita
-  let sectorSensitivity = 1.0;
+  const resolvedParams: Required<ParametrosFenomeno> = {
+    fenomeno: parametros.fenomeno,
+    intensidad: parametros.intensidad,
+    mesInicioPeriodo: Math.max(
+      1,
+      Math.min(baselinePredictive.proyecciones.length, parametros.mesInicioPeriodo ?? 1)
+    ),
+    duracionMeses: Math.max(1, Math.min(24, parametros.duracionMeses ?? 4)),
+    magnitudAdicionalPct: Math.max(-20, Math.min(30, parametros.magnitudAdicionalPct ?? 0)),
+    modoEvaluacion: parametros.modoEvaluacion ?? "preventivo",
+  };
+
+  // Acoplamiento explícito al factor de riesgo climático de la zona geográfica
+  const zonaInfo = ZONAS_GEOGRAFICAS.find(
+    (z) => z.departamento === input.negocio.departamento
+  );
+  const zonaClimateRaw = zonaInfo?.factorRiesgoClimatico ?? 0.5;
+  const factorGeograficoAplicado = cfg.climateMultiplierSensitivity
+    ? Number((0.75 + zonaClimateRaw * 0.55).toFixed(2))
+    : 1.0;
+
+  let sensibilidadSectorialAplicada = 1.0;
   if (cfg.climateMultiplierSensitivity) {
     if (
       input.negocio.sector === "Agrícola y pecuario" ||
       input.negocio.sector === "Gastronomía y turismo"
     ) {
-      sectorSensitivity = 1.25;
+      sensibilidadSectorialAplicada = 1.25;
     } else if (input.negocio.sector === "Servicios técnicos y transporte") {
-      sectorSensitivity = 0.78;
+      sensibilidadSectorialAplicada = 0.78;
     }
   }
 
-  const proyeccionesEstresadas = baselinePredictive.proyecciones.map((p) => {
-    const isPeakImpact = cfg.affectedMonths.includes(p.mesCalendarioIndice);
-    const localFactor = isPeakImpact ? 1.0 : 0.32;
+  const extraFactor = Math.max(0.35, 1 + resolvedParams.magnitudAdicionalPct / 100);
+  const windowStart = resolvedParams.mesInicioPeriodo;
+  const windowEnd = windowStart + resolvedParams.duracionMeses - 1;
 
-    const dropPct = Math.min(0.68, cfg.salesDropBase * mult * sectorSensitivity * localFactor);
+  const esInformal = input.negocio.formalidad === "Persona natural sin RUC / informal";
+
+  const proyeccionesEstresadas = baselinePredictive.proyecciones.map((p) => {
+    const insideWindow = p.periodo >= windowStart && p.periodo <= windowEnd;
+    const isPeakCalendarMonth = cfg.affectedMonths.includes(p.mesCalendarioIndice);
+
+    // Impacto fuerte dentro de la ventana del choque; rezago amortiguado después de la ventana si fue severo
+    let localFactor = 0;
+    if (insideWindow) {
+      localFactor = isPeakCalendarMonth ? 1.0 : 0.65;
+    } else if (p.periodo > windowEnd && p.periodo <= windowEnd + 2) {
+      localFactor = 0.25; // rezago de recuperación post-evento
+    }
+
+    const dropPct = Math.min(
+      0.72,
+      cfg.salesDropBase *
+        mult *
+        sensibilidadSectorialAplicada *
+        factorGeograficoAplicado *
+        extraFactor *
+        localFactor
+    );
     const costIncPct = Math.min(
-      0.55,
-      cfg.costIncreaseBase * mult * sectorSensitivity * localFactor
+      0.6,
+      cfg.costIncreaseBase *
+        mult *
+        sensibilidadSectorialAplicada *
+        factorGeograficoAplicado *
+        extraFactor *
+        localFactor
     );
 
     const ventasEstresadas = Math.max(0, Math.round(p.ventasEsperadas * (1 - dropPct)));
+    // En un choque externo sobrevenido o estacional, los insumos/campañas ya comprometidos no se reducen
+    // linealmente con la caída de ventas y además sufren sobrecostos logísticos o de reposición.
     const costosEstresados = Math.round(p.costosEsperados * (1 + costIncPct));
-    const utilidadOp =
-      ventasEstresadas - costosEstresados - p.gastosOperativosYTributarios;
+
+    // Recalcular tributos proporcionalmente si aplica (sin impuesto fantasma)
+    const gastoOperativo = Math.round(
+      input.costos.gastosOperativosMensuales * (p.diasPeriodo / 30)
+    );
+    const gastoTributario =
+      esInformal || input.costos.tasaTributariaPct <= 0
+        ? 0
+        : Math.round(ventasEstresadas * (input.costos.tasaTributariaPct / 100));
+    const gastosOpYTrib = gastoOperativo + gastoTributario;
+
+    const utilidadOp = ventasEstresadas - costosEstresados - gastosOpYTrib;
     const utilidadDisponible =
       utilidadOp + p.otrosIngresosNetos - p.obligacionesYCarga;
+
+    const halfWidthEstres = Math.max(
+      0.1,
+      (p.ventasRangoSuperior - p.ventasRangoInferior) / Math.max(2, p.ventasEsperadas * 2)
+    );
+    const ventasRangoInferior = Math.max(
+      0,
+      Math.round(ventasEstresadas * (1 - halfWidthEstres))
+    );
+    const ventasRangoSuperior = Math.round(ventasEstresadas * (1 + halfWidthEstres));
+    const utilidadConservadora =
+      p.utilidadNetaDisponible -
+      (p.ventasEsperadas - ventasRangoInferior) +
+      (utilidadDisponible - p.utilidadNetaDisponible);
+    const utilidadFavorable =
+      utilidadDisponible + Math.round((ventasRangoSuperior - ventasEstresadas) * 0.55);
 
     return {
       ...p,
       ventasEsperadas: ventasEstresadas,
-      ventasRangoInferior: Math.max(0, Math.round(ventasEstresadas * 0.82)),
-      ventasRangoSuperior: Math.round(ventasEstresadas * 1.12),
+      ventasRangoInferior,
+      ventasRangoSuperior,
       costosEsperados: costosEstresados,
+      gastosOperativosYTributarios: gastosOpYTrib,
       utilidadNetaOperativa: utilidadOp,
       utilidadNetaDisponible: utilidadDisponible,
+      utilidadConservadora: Math.round(utilidadConservadora),
+      utilidadFavorable: Math.round(utilidadFavorable),
       clasificacionCapacidad: (utilidadDisponible <
       baselinePredictive.utilidadNetaPromedio * 0.7
         ? "Baja"
@@ -155,16 +234,58 @@ export function runExternalShockSimulation(
     utilidadNetaPromedio: Math.round(
       stressUtilSum / Math.max(1, proyeccionesEstresadas.length)
     ),
+    utilidadConservadoraPromedio: Math.round(
+      proyeccionesEstresadas.reduce((a, b) => a + b.utilidadConservadora, 0) /
+        Math.max(1, proyeccionesEstresadas.length)
+    ),
+    utilidadFavorablePromedio: Math.round(
+      proyeccionesEstresadas.reduce((a, b) => a + b.utilidadFavorable, 0) /
+        Math.max(1, proyeccionesEstresadas.length)
+    ),
     ventasTotalesProyectadas: stressSalesSum,
     advertenciasDatos: [
-      `Escenario hipotético de estrés (${parametros.fenomeno} — intensidad ${parametros.intensidad}). No constituye un pronóstico meteorológico ni predicción real.`,
+      `Escenario hipotético (${resolvedParams.fenomeno} — ${resolvedParams.intensidad}, inicio P${resolvedParams.mesInicioPeriodo}, duración ${resolvedParams.duracionMeses}m, modo ${resolvedParams.modoEvaluacion}, factor geográfico ${factorGeograficoAplicado}x). No constituye un pronóstico meteorológico real.`,
       ...baselinePredictive.advertenciasDatos,
     ],
   };
 
+  // Re-optimización preventiva bajo escenario estresado
   const comparacionEstresada = compareSchedules(input.credito, proyeccionesEstresadas);
 
-  // Detectar meses críticos donde la utilidad cae al menos 20% o hay incumplimiento
+  // Evaluación sobrevenida: someter los cronogramas YA DESEMBOLSADOS (base pre-shock) al flujo de caja estresado
+  const comparacionBaseOriginal = compareSchedules(
+    input.credito,
+    baselinePredictive.proyecciones
+  );
+  const factorCapacidad = input.credito.productoConfig.factorMaximoCapacidadPago;
+  const periodosCriticosFijoOriginal: string[] = [];
+  const periodosCriticosAdaptadoOriginal: string[] = [];
+
+  for (let i = 0; i < proyeccionesEstresadas.length; i++) {
+    const uStress = proyeccionesEstresadas[i].utilidadNetaDisponible;
+    const capMaxStress = Math.max(0, uStress * factorCapacidad);
+    const cuotaFijaOrig = comparacionBaseOriginal.tradicional.cuotas[i]?.cuotaTotal ?? 0;
+    const cuotaAdaptOrig = comparacionBaseOriginal.adaptado.cuotas[i]?.cuotaTotal ?? 0;
+
+    if (cuotaFijaOrig > capMaxStress + 0.01 || (uStress <= 0 && cuotaFijaOrig > 0.01)) {
+      periodosCriticosFijoOriginal.push(proyeccionesEstresadas[i].etiquetaPeriodo);
+    }
+    if (cuotaAdaptOrig > capMaxStress + 0.01 || (uStress <= 0 && cuotaAdaptOrig > 0.01)) {
+      periodosCriticosAdaptadoOriginal.push(proyeccionesEstresadas[i].etiquetaPeriodo);
+    }
+  }
+
+  const sobrevenido = {
+    incumplimientosFijoOriginal: periodosCriticosFijoOriginal.length,
+    incumplimientosAdaptadoOriginal: periodosCriticosAdaptadoOriginal.length,
+    periodosCriticosFijoOriginal,
+    periodosCriticosAdaptadoOriginal,
+    resumen:
+      periodosCriticosAdaptadoOriginal.length < periodosCriticosFijoOriginal.length
+        ? `Ante un evento sobrevenido sin reprogramación, el cronograma adaptado original registra ${periodosCriticosAdaptadoOriginal.length} periodo(s) con exceso sobre capacidad estresada frente a ${periodosCriticosFijoOriginal.length} en el plan fijo.`
+        : `Ante un evento sobrevenido severo, ambos cronogramas ya pactados sufren presión (${periodosCriticosAdaptadoOriginal.length} periodos críticos en adaptado vs. ${periodosCriticosFijoOriginal.length} en tradicional), evidenciando necesidad de reprogramación preventiva.`,
+  };
+
   const mesesCriticos = proyeccionesEstresadas
     .filter((p, idx) => {
       const baseUtil = baselinePredictive.proyecciones[idx]?.utilidadNetaDisponible ?? 0;
@@ -178,7 +299,9 @@ export function runExternalShockSimulation(
 
   return {
     esEscenarioHipotetico: true,
-    parametros,
+    parametros: resolvedParams,
+    factorGeograficoAplicado,
+    sensibilidadSectorialAplicada,
     impactoVentasPct,
     impactoCostosPct,
     impactoUtilidadPct,
@@ -187,6 +310,7 @@ export function runExternalShockSimulation(
     comparacionEstresada,
     cuotasQueIncumplenFijo: comparacionEstresada.tradicional.periodosIncumplen,
     cuotasQueIncumplenAdaptado: comparacionEstresada.adaptado.periodosIncumplen,
+    sobrevenido,
   };
 }
 

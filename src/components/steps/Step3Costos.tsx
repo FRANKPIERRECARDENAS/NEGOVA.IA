@@ -36,10 +36,11 @@ export function Step3Costos({
       ? Math.round(promedioVentas * (costos.costoAdquisicionProduccionPct / 100))
       : costos.costoAdquisicionMensualFijo;
 
+  const isInformal = formalidad === "Persona natural sin RUC / informal";
   const tributoEst =
-    costos.tasaTributariaPct > 0
+    !isInformal && costos.tasaTributariaPct > 0
       ? Math.round(promedioVentas * (costos.tasaTributariaPct / 100))
-      : costos.gastosTributariosMensuales;
+      : 0;
 
   const utilidadOpEstimada = Math.round(
     promedioVentas - costoAdqEst - costos.gastosOperativosMensuales - tributoEst

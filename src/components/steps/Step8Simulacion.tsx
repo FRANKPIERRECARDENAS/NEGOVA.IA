@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import {
   IntensidadFenomeno,
+  ModoEvaluacionShock,
   ParametrosFenomeno,
   ResultadoPredictivo,
   ResultadoSimulacionExterna,
@@ -42,11 +43,24 @@ export function Step8Simulacion({
   onRunSimulation,
   onClearSimulation,
 }: Step8SimulacionProps) {
+  const totalPeriods = Math.max(1, baselinePredictivo.proyecciones.length);
   const [fenomeno, setFenomeno] = useState<TipoFenomenoExterno>(
     simulacion?.parametros.fenomeno ?? "Fenómeno El Niño"
   );
   const [intensidad, setIntensidad] = useState<IntensidadFenomeno>(
     simulacion?.parametros.intensidad ?? "Severo"
+  );
+  const [mesInicioPeriodo, setMesInicioPeriodo] = useState<number>(
+    simulacion?.parametros.mesInicioPeriodo ?? 1
+  );
+  const [duracionMeses, setDuracionMeses] = useState<number>(
+    simulacion?.parametros.duracionMeses ?? Math.min(4, totalPeriods)
+  );
+  const [magnitudAdicionalPct, setMagnitudAdicionalPct] = useState<number>(
+    simulacion?.parametros.magnitudAdicionalPct ?? 0
+  );
+  const [modoEvaluacion, setModoEvaluacion] = useState<ModoEvaluacionShock>(
+    simulacion?.parametros.modoEvaluacion ?? "preventivo"
   );
 
   const chartData = (simulacion?.predictivoEstresado.proyecciones ?? []).map((p, idx) => ({
@@ -61,14 +75,14 @@ export function Step8Simulacion({
       <div className="pb-5 border-b border-[var(--border-hairline)] flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <p className="text-xs font-mono text-[var(--accent-teal)]">
-            Etapa 08 · Prueba de estrés hipotética
+            Etapa 08 · Simulador paramétrico de escenarios adversos
           </p>
           <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
             8. Simulador de escenarios externos
           </h2>
           <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
-            Evalúa cómo eventos climáticos o choques de mercado afectan la utilidad neta y la
-            sostenibilidad de ambos cronogramas.
+            Parametriza fenómeno, intensidad, periodo de inicio, duración y modo de evaluación
+            (reprogramación preventiva vs. evento sobrevenido con cronograma ya pactado).
           </p>
         </div>
         <span className="text-xs font-mono text-[var(--accent-warning)] border border-[var(--accent-warning)]/40 bg-[var(--accent-warning-soft)] px-3 py-1.5 rounded-lg whitespace-nowrap shrink-0">
@@ -76,12 +90,12 @@ export function Step8Simulacion({
         </span>
       </div>
 
-      {/* Controles de simulación */}
-      <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-xl p-5 sm:p-6">
+      {/* Controles paramétricos de simulación */}
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-xl p-5 sm:p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <span className="block text-xs font-medium text-[var(--text-secondary)] mb-2.5">
-              Seleccionar fenómeno externo
+              1. Seleccionar fenómeno externo
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {FENOMENOS.map((fen) => {
@@ -105,10 +119,10 @@ export function Step8Simulacion({
             </div>
           </div>
 
-          <div className="flex flex-col justify-between gap-5">
+          <div className="space-y-4">
             <div>
-              <span className="block text-xs font-medium text-[var(--text-secondary)] mb-2.5">
-                Nivel de intensidad del choque
+              <span className="block text-xs font-medium text-[var(--text-secondary)] mb-2">
+                2. Nivel de intensidad base
               </span>
               <div className="grid grid-cols-3 gap-2">
                 {INTENSIDADES.map((lvl) => {
@@ -119,7 +133,7 @@ export function Step8Simulacion({
                       type="button"
                       aria-pressed={active}
                       onClick={() => setIntensidad(lvl)}
-                      className={`py-2.5 px-3 rounded-lg border text-xs font-semibold transition-colors duration-150 ${
+                      className={`py-2 px-3 rounded-lg border text-xs font-semibold transition-colors duration-150 ${
                         active
                           ? "border-[var(--bg-ink)] bg-[var(--bg-ink)] text-[var(--text-on-ink)] dark:border-[var(--accent-teal)] dark:bg-[var(--accent-teal)] dark:text-[#041418]"
                           : "border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--border-strong)]"
@@ -132,28 +146,131 @@ export function Step8Simulacion({
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => onRunSimulation({ fenomeno, intensidad })}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-[var(--text-on-ink)] bg-[var(--bg-ink)] hover:bg-[var(--bg-ink-subtle)] dark:bg-[var(--accent-teal)] dark:text-[#041418] dark:hover:bg-[var(--accent-teal-hover)] rounded-lg transition-colors whitespace-nowrap"
-              >
-                <CloudLightning className="w-4 h-4 text-[var(--accent-teal-ink)] dark:text-[#041418]" />
-                Simular escenarios externos
-              </button>
-
-              {simulacion && (
-                <button
-                  type="button"
-                  onClick={onClearSimulation}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-[var(--text-secondary)] bg-[var(--bg-surface)] border border-[var(--border-hairline)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] rounded-lg transition-colors whitespace-nowrap"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  Restablecer escenario base
-                </button>
-              )}
+            <div>
+              <span className="block text-xs font-medium text-[var(--text-secondary)] mb-2">
+                3. Modo de evaluación financiera
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                {(
+                  [
+                    { id: "preventivo", label: "Preventivo (re-optimizado)" },
+                    { id: "sobrevenido", label: "Sobrevenido (cronograma vigente)" },
+                  ] as const
+                ).map((m) => {
+                  const active = modoEvaluacion === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setModoEvaluacion(m.id)}
+                      className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${
+                        active
+                          ? "border-[var(--accent-teal)] bg-[var(--accent-teal-soft)] text-[var(--text-primary)] font-semibold"
+                          : "border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)]"
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Parámetros finos: inicio, duración, magnitud adicional */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-[var(--border-hairline)]">
+          <div>
+            <label
+              htmlFor="shock-inicio"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
+            >
+              Periodo de inicio (P1..P{totalPeriods})
+            </label>
+            <input
+              id="shock-inicio"
+              type="number"
+              min={1}
+              max={totalPeriods}
+              value={mesInicioPeriodo}
+              onChange={(e) =>
+                setMesInicioPeriodo(
+                  Math.max(1, Math.min(totalPeriods, Number(e.target.value) || 1))
+                )
+              }
+              className="w-full h-10 px-3 text-xs font-mono tabular-nums bg-[var(--bg-canvas)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-lg"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="shock-duracion"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
+            >
+              Duración del evento (periodos)
+            </label>
+            <input
+              id="shock-duracion"
+              type="number"
+              min={1}
+              max={totalPeriods}
+              value={duracionMeses}
+              onChange={(e) =>
+                setDuracionMeses(Math.max(1, Math.min(totalPeriods, Number(e.target.value) || 1)))
+              }
+              className="w-full h-10 px-3 text-xs font-mono tabular-nums bg-[var(--bg-canvas)] text-[var(--text-primary)] border border-[var(--border-hairline)] rounded-lg"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="shock-magnitud"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
+            >
+              Ajuste adicional de severidad ({magnitudAdicionalPct >= 0 ? "+" : ""}
+              {magnitudAdicionalPct}%)
+            </label>
+            <input
+              id="shock-magnitud"
+              type="range"
+              min={-20}
+              max={30}
+              step={5}
+              value={magnitudAdicionalPct}
+              onChange={(e) => setMagnitudAdicionalPct(Number(e.target.value))}
+              className="w-full h-10 accent-[var(--accent-teal)]"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() =>
+              onRunSimulation({
+                fenomeno,
+                intensidad,
+                mesInicioPeriodo,
+                duracionMeses,
+                magnitudAdicionalPct,
+                modoEvaluacion,
+              })
+            }
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-[var(--text-on-ink)] bg-[var(--bg-ink)] hover:bg-[var(--bg-ink-subtle)] dark:bg-[var(--accent-teal)] dark:text-[#041418] dark:hover:bg-[var(--accent-teal-hover)] rounded-lg transition-colors whitespace-nowrap"
+          >
+            <CloudLightning className="w-4 h-4 text-[var(--accent-teal-ink)] dark:text-[#041418]" />
+            Simular escenarios externos
+          </button>
+
+          {simulacion && (
+            <button
+              type="button"
+              onClick={onClearSimulation}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-[var(--text-secondary)] bg-[var(--bg-surface)] border border-[var(--border-hairline)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] rounded-lg transition-colors whitespace-nowrap"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Restablecer escenario base
+            </button>
+          )}
         </div>
       </div>
 
@@ -164,10 +281,11 @@ export function Step8Simulacion({
             <strong className="font-semibold text-[var(--accent-warning)]">
               Escenario hipotético activo:
             </strong>{" "}
-            {simulacion.parametros.fenomeno} (intensidad {simulacion.parametros.intensidad}). Esta
-            prueba de estrés modifica las variables de ventas y costos mediante parámetros
-            explícitos y recalcula ambos cronogramas; no constituye una predicción meteorológica ni
-            un pronóstico real de eventos futuros.
+            {simulacion.parametros.fenomeno} ({simulacion.parametros.intensidad}, inicio P
+            {simulacion.parametros.mesInicioPeriodo} por {simulacion.parametros.duracionMeses}m,
+            factor climático geográfico {simulacion.factorGeograficoAplicado}x, sensibilidad
+            sectorial {simulacion.sensibilidadSectorialAplicada}x). No constituye un pronóstico
+            meteorológico real.
           </div>
 
           {/* Ledger de impactos */}
@@ -198,38 +316,70 @@ export function Step8Simulacion({
             </div>
             <div className="p-4 sm:p-5">
               <p className="text-[11px] font-mono uppercase tracking-[0.06em] text-[var(--text-muted)]">
-                Incumpl. (Plan Fijo)
+                Incumpl. Fijo (Prev. / Sobrev.)
               </p>
               <p className="text-xl font-semibold font-mono tabular-nums text-[var(--accent-risk)] mt-2">
-                {simulacion.cuotasQueIncumplenFijo}
+                {simulacion.cuotasQueIncumplenFijo} /{" "}
+                {simulacion.sobrevenido.incumplimientosFijoOriginal}
               </p>
             </div>
             <div className="p-4 sm:p-5 col-span-2 lg:col-span-1">
               <p className="text-[11px] font-mono uppercase tracking-[0.06em] text-[var(--text-muted)]">
-                Incumpl. (Adaptado)
+                Incumpl. Adapt. (Prev. / Sobrev.)
               </p>
               <p
                 className={`text-xl font-semibold font-mono tabular-nums mt-2 ${
-                  simulacion.cuotasQueIncumplenAdaptado > 0
+                  simulacion.cuotasQueIncumplenAdaptado > 0 ||
+                  simulacion.sobrevenido.incumplimientosAdaptadoOriginal > 0
                     ? "text-[var(--accent-warning)]"
                     : "text-[var(--accent-teal)]"
                 }`}
               >
-                {simulacion.cuotasQueIncumplenAdaptado}
+                {simulacion.cuotasQueIncumplenAdaptado} /{" "}
+                {simulacion.sobrevenido.incumplimientosAdaptadoOriginal}
               </p>
             </div>
           </div>
 
-          {/* Periodos críticos */}
-          <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-lg px-4 py-3 text-xs text-[var(--text-secondary)]">
-            <span className="font-semibold text-[var(--text-primary)]">
-              Periodos críticos bajo estrés:{" "}
-            </span>
-            <span className="font-mono">
-              {simulacion.mesesCriticos.length > 0
-                ? simulacion.mesesCriticos.join(" · ")
-                : "Ningún periodo presenta caída severa ni incumplimiento crítico."}
-            </span>
+          {/* Comparativa Antes vs. Después + Evento Sobrevenido */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-lg px-4 py-3.5 text-xs space-y-1.5">
+              <p className="font-semibold text-[var(--text-primary)]">
+                Evaluación ante evento sobrevenido (sin reprogramación previa)
+              </p>
+              <p className="text-[var(--text-secondary)] leading-relaxed">
+                {simulacion.sobrevenido.resumen}
+              </p>
+            </div>
+
+            <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-lg px-4 py-3.5 text-xs space-y-1.5">
+              <p className="font-semibold text-[var(--text-primary)]">
+                Antes vs. Después (Re-optimización preventiva bajo estrés)
+              </p>
+              <p className="text-[var(--text-secondary)] leading-relaxed">
+                Utilidad promedio:{" "}
+                <span className="font-mono text-[var(--text-primary)]">
+                  S/ {baselinePredictivo.utilidadNetaPromedio.toLocaleString("es-PE")} → S/{" "}
+                  {simulacion.predictivoEstresado.utilidadNetaPromedio.toLocaleString("es-PE")}
+                </span>{" "}
+                · Viabilidad adaptada bajo estrés:{" "}
+                <strong
+                  className={
+                    simulacion.comparacionEstresada.adaptado.viable
+                      ? "text-[var(--accent-positive)]"
+                      : "text-[var(--accent-risk)]"
+                  }
+                >
+                  {simulacion.comparacionEstresada.adaptado.viable ? "Viable" : "No viable"}
+                </strong>
+              </p>
+              <p className="text-[var(--text-muted)] font-mono">
+                Periodos críticos:{" "}
+                {simulacion.mesesCriticos.length > 0
+                  ? simulacion.mesesCriticos.join(" · ")
+                  : "Sin periodos críticos."}
+              </p>
+            </div>
           </div>
 
           {/* Gráfico comparativo de utilidad base vs estresada */}
@@ -339,7 +489,7 @@ export function Step8Simulacion({
             Aún no se ha ejecutado una prueba de estrés externo
           </p>
           <p className="text-xs text-[var(--text-secondary)] mt-1.5 max-w-md mx-auto leading-relaxed">
-            Selecciona un fenómeno y una intensidad arriba y pulsa{" "}
+            Configura fenómeno, intensidad, inicio, duración y modo arriba y pulsa{" "}
             <strong className="font-semibold text-[var(--text-primary)]">
               Simular escenarios externos
             </strong>{" "}

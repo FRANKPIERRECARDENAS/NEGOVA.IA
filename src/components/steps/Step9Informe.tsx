@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
-import { Download, Printer, RefreshCw, Save, Sparkles } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Download,
+  Printer,
+  RefreshCw,
+  Save,
+  ShieldCheck,
+  Sparkles,
+  XCircle,
+} from "lucide-react";
 import {
   Bar,
   CartesianGrid,
@@ -18,6 +28,7 @@ import {
   AnalisisInput,
   ComparacionCronogramas,
   EstadoComite,
+  EstadoCumplimiento,
   ExplicacionComite,
   ResultadoPredictivo,
   ResultadoSimulacionExterna,
@@ -47,6 +58,31 @@ function escapeHtml(raw: string): string {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
+}
+
+function StatusBadge({ estado }: { estado: EstadoCumplimiento }) {
+  if (estado === "Cumple") {
+    return (
+      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent-positive)]">
+        <CheckCircle2 className="w-3 h-3 shrink-0" />
+        Cumple
+      </span>
+    );
+  }
+  if (estado === "Riesgo") {
+    return (
+      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent-warning)]">
+        <AlertTriangle className="w-3 h-3 shrink-0" />
+        Riesgo
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent-risk)]">
+      <XCircle className="w-3 h-3 shrink-0" />
+      Incumple
+    </span>
+  );
 }
 
 export function Step9Informe({
@@ -79,6 +115,8 @@ export function Step9Informe({
     comparacion.adaptado.costoTotalCredito,
     simulacion?.parametros.fenomeno,
     simulacion?.parametros.intensidad,
+    simulacion?.parametros.mesInicioPeriodo,
+    simulacion?.parametros.duracionMeses,
   ]);
 
   const handleDownloadHtml = () => {
@@ -91,51 +129,51 @@ export function Step9Informe({
   body { font-family: system-ui, -apple-system, sans-serif; color: #0A1628; margin: 32px; line-height: 1.5; background: #F6F5F0; }
   h1, h2 { color: #0A1628; }
   .meta { font-size: 13px; color: #414F63; margin-bottom: 20px; }
-  .box { background: #ffffff; border: 1px solid #DEDAD0; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .box { background: #ffffff; border: 1px solid #DEDAD0; border-radius: 8px; padding: 16px; margin-bottom: 14px; }
   table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; background: #ffffff; }
   th, td { border-bottom: 1px solid #DEDAD0; padding: 6px 8px; text-align: right; }
   th:first-child, td:first-child { text-align: left; }
 </style>
 </head>
 <body>
-  <h1>Informe Técnico para el Comité de Créditos · NEGOVA.IA</h1>
+  <h1>Expediente Técnico de Comité (16 Secciones) · NEGOVA.IA</h1>
   <div class="meta">
     Caso: <strong>${escapeHtml(input.idCaso)}</strong> · Estado: <strong>${escapeHtml(estadoComite)}</strong> · Prototipo Cajathon 2026 (Desafío NEG-01)
   </div>
   <div class="box">
-    <h2>1. Características del negocio</h2>
-    <p><strong>Negocio:</strong> ${escapeHtml(input.negocio.nombreComercial)} (${escapeHtml(input.negocio.actividadEspecifica)})</p>
-    <p><strong>Ubicación:</strong> ${escapeHtml(input.negocio.distritoZona)}, ${escapeHtml(input.negocio.provincia)}, ${escapeHtml(input.negocio.departamento)}</p>
-    <p><strong>Formalidad:</strong> ${escapeHtml(input.negocio.formalidad)} · <strong>Operación:</strong> ${escapeHtml(input.negocio.tipoOperacion)}</p>
-  </div>
-  <div class="box">
-    <h2>2. Ciclo económico estimado y capacidad</h2>
+    <h2>1–3. Perfil económico, datos históricos y estacionalidad</h2>
+    <p><strong>Negocio:</strong> ${escapeHtml(input.negocio.nombreComercial)} (${escapeHtml(input.negocio.actividadEspecifica)}) · ${escapeHtml(input.negocio.departamento)}/${escapeHtml(input.negocio.provincia)}</p>
+    <p><strong>Cobertura histórica:</strong> ${predictivo.mesesDisponiblesCount}/12 meses reales · <strong>Método:</strong> ${escapeHtml(predictivo.trazabilidad.metodoSeleccionado)}</p>
     <p>${escapeHtml(explicacion.explicacionEstacionalidad)}</p>
-    <p><strong>Mayor capacidad:</strong> ${escapeHtml(predictivo.mesesMayorCapacidad.join(", "))} · <strong>Menor capacidad:</strong> ${escapeHtml(predictivo.mesesMenorCapacidad.join(", "))} · <strong>Confianza:</strong> ${predictivo.nivelConfianza}%</p>
   </div>
   <div class="box">
-    <h2>3. Comparación financiera (Base 360)</h2>
-    <p><strong>Monto:</strong> S/ ${input.credito.montoSolicitado.toLocaleString("es-PE")} · <strong>Plazo:</strong> ${input.credito.plazoMeses} meses · <strong>TEA:</strong> ${(input.credito.tea * 100).toFixed(2)}% · <strong>Factor máximo:</strong> ${input.credito.productoConfig.factorMaximoCapacidadPago.toFixed(2)}</p>
-    <p><strong>Plan Tradicional:</strong> Costo total S/ ${comparacion.tradicional.costoTotalCredito.toLocaleString("es-PE")} · Incumplimientos: ${comparacion.tradicional.periodosIncumplen}</p>
-    <p><strong>Plan Adaptado:</strong> Viable: ${comparacion.adaptado.viable ? "Sí" : "No"} · Costo total S/ ${comparacion.adaptado.costoTotalCredito.toLocaleString("es-PE")} · Incumplimientos: ${comparacion.adaptado.periodosIncumplen}</p>
+    <h2>4–7. Proyecciones, incertidumbre y capacidad económica</h2>
+    <p><strong>Escenarios mensuales:</strong> Conservador P10 S/ ${predictivo.utilidadConservadoraPromedio.toLocaleString("es-PE")} · Base S/ ${predictivo.utilidadNetaPromedio.toLocaleString("es-PE")} · Favorable P90 S/ ${predictivo.utilidadFavorablePromedio.toLocaleString("es-PE")}</p>
+    <p><strong>Mayor capacidad:</strong> ${escapeHtml(predictivo.mesesMayorCapacidad.join(", "))} · <strong>Menor capacidad:</strong> ${escapeHtml(predictivo.mesesMenorCapacidad.join(", "))}</p>
+  </div>
+  <div class="box">
+    <h2>8–11. Comparación financiera, validador matemático y trazabilidad</h2>
+    <p><strong>Opción recomendada:</strong> ${escapeHtml(comparacion.mejorOpcion)} — ${escapeHtml(comparacion.motivoSeleccion)}</p>
+    <p><strong>Validador independiente:</strong> ${comparacion.adaptado.validacionIndependiente.valido ? "APROBADO" : "OBSERVADO"} (Saldo final: S/ ${comparacion.adaptado.validacionIndependiente.saldoFinalVerificado.toFixed(2)})</p>
     <p>${escapeHtml(explicacion.comparacionPlanes)}</p>
   </div>
   <div class="box">
-    <h2>4. Riesgos, supuestos y conclusión para el Comité</h2>
+    <h2>12–16. Estrés externo, limitaciones y recomendación explicada</h2>
     <p>${escapeHtml(explicacion.resumenRiesgos)}</p>
     <p>${escapeHtml(explicacion.conclusionComite)}</p>
-    <p><em>Nota: El sistema recomienda y aporta evidencia matemática; la decisión definitiva pertenece al Comité.</em></p>
+    <p><strong>Para el microempresario:</strong> ${escapeHtml(explicacion.explicacionSencilla)}</p>
+    <p><em>${escapeHtml(predictivo.trazabilidad.avisoNoGarantia)}</em></p>
   </div>
-  <h2>5. Cronograma comparado</h2>
+  <h2>Anexo. Cronograma comparado completo</h2>
   <table>
     <thead>
-      <tr><th>Periodo</th><th>Utilidad Neta</th><th>Cuota Fija</th><th>Cuota Adaptada</th><th>Ratio Adapt.</th><th>Estado Adapt.</th></tr>
+      <tr><th>Periodo</th><th>Utilidad Neta</th><th>Cuota Fija</th><th>Cuota Adaptada</th><th>Capital Adapt.</th><th>Ratio Adapt.</th><th>Estado</th></tr>
     </thead>
     <tbody>
       ${comparacion.adaptado.cuotas
         .map((c, idx) => {
           const cf = comparacion.tradicional.cuotas[idx];
-          return `<tr><td>${escapeHtml(c.etiquetaPeriodo)}</td><td>S/ ${c.utilidadNetaPeriodo.toFixed(2)}</td><td>S/ ${(cf?.cuotaTotal ?? 0).toFixed(2)}</td><td>S/ ${c.cuotaTotal.toFixed(2)}</td><td>${c.ratioCuotaUtilidad !== null ? `${(c.ratioCuotaUtilidad * 100).toFixed(1)}%` : "N/A"}</td><td>${escapeHtml(c.estado)}</td></tr>`;
+          return `<tr><td>${escapeHtml(c.etiquetaPeriodo)}</td><td>S/ ${c.utilidadNetaPeriodo.toFixed(2)}</td><td>S/ ${(cf?.cuotaTotal ?? 0).toFixed(2)}</td><td>S/ ${c.cuotaTotal.toFixed(2)}</td><td>S/ ${c.amortizacionCapital.toFixed(2)}</td><td>${c.ratioCuotaUtilidad !== null ? `${(c.ratioCuotaUtilidad * 100).toFixed(1)}%` : "N/A"}</td><td>${escapeHtml(c.estado)}</td></tr>`;
         })
         .join("")}
     </tbody>
@@ -161,19 +199,22 @@ export function Step9Informe({
     cuotaAdaptada: comparacion.adaptado.cuotas[idx]?.cuotaTotal ?? 0,
   }));
 
+  const { trazabilidad } = predictivo;
+  const valInd = comparacion.adaptado.validacionIndependiente;
+
   return (
     <div className="space-y-8">
       {/* Barra de acciones no imprimible */}
       <div className="no-print pb-5 border-b border-[var(--border-hairline)] flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
           <p className="text-xs font-mono text-[var(--accent-teal)]">
-            Etapa 09 · Expediente de Comité
+            Etapa 09 · Expediente completo de Comité (16 secciones)
           </p>
           <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
-            9. Informe técnico para el Comité
+            9. Informe técnico para el Comité de Créditos
           </h2>
           <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
-            Documento ejecutivo estructurado. El sistema recomienda y aporta evidencia; la decisión
+            Documento ejecutivo estructurado. El sistema aporta evidencia cuantitativa; la decisión
             definitiva corresponde al Comité.
           </p>
         </div>
@@ -193,7 +234,7 @@ export function Step9Informe({
             className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] border border-[var(--border-hairline)] hover:border-[var(--border-strong)] rounded-lg transition-colors whitespace-nowrap"
           >
             <Download className="w-3.5 h-3.5" />
-            Descargar informe
+            Descargar informe HTML
           </button>
           <button
             type="button"
@@ -245,7 +286,7 @@ export function Step9Informe({
         </div>
       </div>
 
-      {/* Documento institucional del informe */}
+      {/* Documento institucional de 16 secciones */}
       <article className="bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-xl p-6 lg:p-8 space-y-8 print:bg-white print:text-[#0A1628] print:border-0 print:p-0">
         {/* Encabezado formal del expediente */}
         <div className="border-b border-[var(--border-hairline)] pb-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -253,15 +294,15 @@ export function Step9Informe({
             <BrandLogo size="lg" className="mt-0.5" />
             <div>
               <p className="text-[11px] font-mono uppercase tracking-[0.08em] text-[var(--accent-teal)]">
-                NEGOVA.IA · Expediente técnico de crédito adaptativo
+                NEGOVA.IA · Expediente Técnico de Comité (16 Secciones)
               </p>
               <h3 className="font-display text-xl font-semibold text-[var(--text-primary)] mt-1">
                 {input.negocio.nombreComercial}
               </h3>
               <p className="text-xs text-[var(--text-muted)] mt-1">
                 Caso <span className="font-mono text-[var(--text-primary)]">{input.idCaso}</span> ·{" "}
-                {input.esSintetico ? "Perfil sintético de demostración" : "Caso ingresado en sesión"} ·
-                Estado: {estadoComite}
+                {input.esSintetico ? "Perfil sintético reproducible" : "Caso ingresado en sesión"}{" "}
+                · Estado: {estadoComite}
               </p>
             </div>
           </div>
@@ -276,59 +317,64 @@ export function Step9Informe({
               Plazo: {input.credito.plazoMeses} m · TEA {(input.credito.tea * 100).toFixed(2)}%
             </p>
             <p>
-              Factor máx.: {input.credito.productoConfig.factorMaximoCapacidadPago.toFixed(2)}
+              Factor máx.: {input.credito.productoConfig.factorMaximoCapacidadPago.toFixed(2)} ·
+              Opción: <strong className="text-[var(--accent-teal)]">{comparacion.mejorOpcion}</strong>
             </p>
           </div>
         </div>
 
-        {/* Bloque 1: Identificación y ciclo económico */}
+        {/* Secciones 1–4: Perfil, Datos históricos, Estacionalidad y Proyecciones */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-          <div className="space-y-2">
-            <h4 className="text-xs font-mono uppercase tracking-[0.06em] text-[var(--text-muted)]">
-              Identificación y ubicación
+          <div className="space-y-2.5">
+            <h4 className="font-mono uppercase tracking-[0.06em] text-[var(--text-muted)]">
+              1–2. Perfil económico y datos históricos
             </h4>
             <p className="text-[var(--text-secondary)] leading-relaxed">
               <strong className="text-[var(--text-primary)]">Sector y actividad:</strong>{" "}
               {input.negocio.sector} — {input.negocio.actividadEspecifica}
             </p>
             <p className="text-[var(--text-secondary)] leading-relaxed">
-              <strong className="text-[var(--text-primary)]">Modelo:</strong>{" "}
-              {input.negocio.modeloNegocio} ({input.negocio.tipoOperacion})
+              <strong className="text-[var(--text-primary)]">Ubicación y operación:</strong>{" "}
+              {input.negocio.distritoZona}, {input.negocio.provincia}, {input.negocio.departamento}{" "}
+              ({input.negocio.tipoOperacion} · {input.negocio.formalidad})
             </p>
             <p className="text-[var(--text-secondary)] leading-relaxed">
-              <strong className="text-[var(--text-primary)]">Ubicación:</strong>{" "}
-              {input.negocio.distritoZona}, {input.negocio.provincia}, {input.negocio.departamento}
+              <strong className="text-[var(--text-primary)]">Procedencia y cobertura:</strong>{" "}
+              {trazabilidad.procedenciaDatos} ({predictivo.mesesDisponiblesCount}/12 meses reales).
             </p>
             <p className="text-[var(--text-secondary)] leading-relaxed">
-              <strong className="text-[var(--text-primary)]">Formalidad:</strong>{" "}
-              {input.negocio.formalidad}
+              <strong className="text-[var(--text-primary)]">Método predictivo:</strong>{" "}
+              {trazabilidad.metodoSeleccionado}
             </p>
           </div>
 
-          <div className="space-y-2">
-            <h4 className="text-xs font-mono uppercase tracking-[0.06em] text-[var(--text-muted)]">
-              Ciclo económico estimado
+          <div className="space-y-2.5">
+            <h4 className="font-mono uppercase tracking-[0.06em] text-[var(--text-muted)]">
+              3–6. Estacionalidad, escenarios, incertidumbre y capacidad
             </h4>
             <p className="text-[var(--text-secondary)] leading-relaxed">
-              <strong className="text-[var(--text-primary)]">Etapas de mayor capacidad:</strong>{" "}
-              {predictivo.mesesMayorCapacidad.join(", ")}
+              <strong className="text-[var(--text-primary)]">Pico / Valle:</strong> Mayor
+              capacidad en {predictivo.mesesMayorCapacidad.join(", ")}; menor holgura en{" "}
+              {predictivo.mesesMenorCapacidad.join(", ")}.
             </p>
             <p className="text-[var(--text-secondary)] leading-relaxed">
-              <strong className="text-[var(--text-primary)]">Etapas de menor capacidad:</strong>{" "}
-              {predictivo.mesesMenorCapacidad.join(", ")}
+              <strong className="text-[var(--text-primary)]">Tendencia e incertidumbre:</strong>{" "}
+              {predictivo.tendencia} ({predictivo.pendienteMensualPct > 0 ? "+" : ""}
+              {predictivo.pendienteMensualPct}%/mes · Volatilidad {predictivo.volatilidadPct}% ·
+              σ_res {trazabilidad.sigmaResidualPct}% · Respaldo {predictivo.nivelConfianza}/100).
             </p>
-            <p className="text-[var(--text-secondary)] leading-relaxed">
-              <strong className="text-[var(--text-primary)]">Tendencia y volatilidad:</strong>{" "}
-              {predictivo.tendencia} ({predictivo.volatilidadPct}% volatilidad) · Confianza{" "}
-              <span className="font-mono tabular-nums">{predictivo.nivelConfianza}%</span>
-            </p>
-            <p className="text-[var(--text-secondary)] leading-relaxed">
-              <strong className="text-[var(--text-primary)]">
-                Utilidad neta disponible promedio:
+            <p className="text-[var(--text-secondary)] leading-relaxed font-mono tabular-nums">
+              <strong className="font-sans text-[var(--text-primary)]">
+                3 Escenarios (Utilidad/mes):
               </strong>{" "}
-              <span className="font-mono tabular-nums text-[var(--text-primary)]">
-                S/ {predictivo.utilidadNetaPromedio.toLocaleString("es-PE")}
-              </span>
+              P10 S/ {predictivo.utilidadConservadoraPromedio.toLocaleString("es-PE")} | Base S/{" "}
+              {predictivo.utilidadNetaPromedio.toLocaleString("es-PE")} | P90 S/{" "}
+              {predictivo.utilidadFavorablePromedio.toLocaleString("es-PE")}
+            </p>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">Capacidad neta:</strong> Descuenta
+              costos, obligaciones financieras y carga familiar; techo máximo{" "}
+              {(input.credito.productoConfig.factorMaximoCapacidadPago * 100).toFixed(0)}%.
             </p>
           </div>
         </div>
@@ -337,14 +383,13 @@ export function Step9Informe({
         <div className="pt-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
             <h4 className="text-sm font-semibold text-[var(--text-primary)]">
-              Ingresos proyectados, utilidad neta y cuota adaptada propuesta
+              4. Ingresos proyectados, utilidad neta y cuota adaptada propuesta
             </h4>
             <div className="flex flex-wrap items-center gap-4 text-[11px] text-[var(--text-muted)]">
               <span className="inline-flex items-center gap-1.5">
                 <span
                   className="w-2 h-2 rounded-xs inline-block"
                   style={{ backgroundColor: "var(--chart-bar-base)" }}
-                  aria-hidden="true"
                 />
                 Ventas
               </span>
@@ -352,7 +397,6 @@ export function Step9Informe({
                 <span
                   className="w-2 h-2 rounded-xs inline-block"
                   style={{ backgroundColor: "var(--chart-bar-secondary)" }}
-                  aria-hidden="true"
                 />
                 Utilidad neta
               </span>
@@ -360,7 +404,6 @@ export function Step9Informe({
                 <span
                   className="w-3 h-0.5 inline-block"
                   style={{ backgroundColor: "var(--accent-teal)" }}
-                  aria-hidden="true"
                 />
                 Cuota adaptada
               </span>
@@ -427,13 +470,13 @@ export function Step9Informe({
           </div>
         </div>
 
-        {/* Capa explicativa Gemini / Analítica */}
+        {/* Secciones 7–11: Comparación, Reglas, Validador, Trazabilidad y Explicabilidad */}
         <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-xl p-5 sm:p-6 space-y-5">
           <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[var(--border-hairline)]">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[var(--accent-teal)]" />
               <h4 className="text-sm font-semibold text-[var(--text-primary)]">
-                Interpretación ejecutiva y explicación de la propuesta
+                15–16. Explicabilidad y Recomendación Técnica para el Comité
               </h4>
             </div>
             <div className="flex items-center gap-3 no-print">
@@ -471,13 +514,13 @@ export function Step9Informe({
             </div>
             <div>
               <p className="font-semibold text-[var(--text-primary)] mb-1">
-                Comparación financiera
+                Comparación financiera (Plan A vs. Plan B)
               </p>
               <p>{explicacion.comparacionPlanes}</p>
             </div>
             <div>
               <p className="font-semibold text-[var(--text-primary)] mb-1">
-                Riesgos y escenarios adversos
+                12. Riesgos y escenarios adversos
               </p>
               <p>{explicacion.resumenRiesgos}</p>
             </div>
@@ -486,7 +529,7 @@ export function Step9Informe({
           <div className="pt-4 border-t border-[var(--border-hairline)] grid grid-cols-1 md:grid-cols-2 gap-5 text-xs leading-relaxed">
             <div>
               <p className="font-semibold text-[var(--text-primary)] mb-1">
-                Conclusión técnica para el Asesor de Riesgos y Comité
+                16. Conclusión para el Asesor de Riesgos y Comité
               </p>
               <p className="text-[var(--text-secondary)]">{explicacion.conclusionComite}</p>
             </div>
@@ -497,13 +540,32 @@ export function Step9Informe({
               <p className="text-[var(--text-secondary)]">{explicacion.explicacionSencilla}</p>
             </div>
           </div>
+
+          {explicacion.trazabilidadCalculos && (
+            <p className="text-[11px] font-mono text-[var(--text-muted)] pt-3 border-t border-[var(--border-hairline)]">
+              10. Trazabilidad de cálculo: {explicacion.trazabilidadCalculos}
+            </p>
+          )}
         </div>
 
-        {/* Resumen financiero comparado e impacto de estrés */}
+        {/* Secciones 7, 8, 9, 11: Cronogramas, Validación matemática y Tabla completa */}
         <div className="space-y-5">
-          <h4 className="text-sm font-semibold text-[var(--text-primary)]">
-            Comparación financiera y cronograma propuesto (Tradicional vs. Adaptado)
-          </h4>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h4 className="text-sm font-semibold text-[var(--text-primary)]">
+              7–9. Comparación financiera, validación matemática independiente y cronograma
+            </h4>
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono">
+              <ShieldCheck
+                className={`w-4 h-4 ${
+                  valInd.valido ? "text-[var(--accent-positive)]" : "text-[var(--accent-risk)]"
+                }`}
+              />
+              <span>
+                Validador independiente: {valInd.valido ? "APROBADO" : "OBSERVADO"} (Saldo S/{" "}
+                {valInd.saldoFinalVerificado.toFixed(2)})
+              </span>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 border border-[var(--border-hairline)] rounded-xl overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-[var(--border-hairline)] text-xs">
             <div className="bg-[var(--bg-surface)] p-4">
@@ -519,12 +581,14 @@ export function Step9Informe({
                 {comparacion.tradicional.tcea !== null
                   ? `${(comparacion.tradicional.tcea * 100).toFixed(2)}%`
                   : "N/D"}{" "}
-                · Incumplimientos: {comparacion.tradicional.periodosIncumplen}
+                · Incumpl.: {comparacion.tradicional.periodosIncumplen}
               </p>
             </div>
 
             <div className="bg-[var(--accent-teal-soft)] p-4">
-              <p className="text-[var(--accent-teal)] font-semibold">Plan Adaptado (Negova.IA)</p>
+              <p className="text-[var(--accent-teal)] font-semibold">
+                Plan Adaptado · Opción: {comparacion.mejorOpcion}
+              </p>
               <p className="text-sm font-semibold font-mono tabular-nums text-[var(--text-primary)] mt-1.5">
                 Costo total: S/{" "}
                 {comparacion.adaptado.costoTotalCredito.toLocaleString("es-PE", {
@@ -542,16 +606,16 @@ export function Step9Informe({
             </div>
 
             <div className="bg-[var(--bg-surface)] p-4">
-              <p className="text-[var(--text-muted)]">Escenario adverso simulado</p>
+              <p className="text-[var(--text-muted)]">11. Escenario adverso simulado</p>
               {simulacion ? (
                 <>
                   <p className="text-sm font-semibold text-[var(--accent-warning)] mt-1.5">
                     {simulacion.parametros.fenomeno} ({simulacion.parametros.intensidad})
                   </p>
                   <p className="text-[var(--text-secondary)] mt-1 font-mono tabular-nums">
-                    Ventas {simulacion.impactoVentasPct}% · Incumpl.:{" "}
-                    {simulacion.cuotasQueIncumplenFijo} fijo /{" "}
-                    {simulacion.cuotasQueIncumplenAdaptado} adapt.
+                    Ventas {simulacion.impactoVentasPct}% · Sobrev.:{" "}
+                    {simulacion.sobrevenido.incumplimientosFijoOriginal} fijo /{" "}
+                    {simulacion.sobrevenido.incumplimientosAdaptadoOriginal} adapt.
                   </p>
                 </>
               ) : (
@@ -590,22 +654,27 @@ export function Step9Informe({
                         S/ {c.utilidadNetaPeriodo.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
                       </td>
                       <td className="py-2 px-3 font-mono tabular-nums text-right">
-                        S/ {(cf?.cuotaTotal ?? 0).toLocaleString("es-PE", { minimumFractionDigits: 2 })}
+                        S/{" "}
+                        {(cf?.cuotaTotal ?? 0).toLocaleString("es-PE", {
+                          minimumFractionDigits: 2,
+                        })}
                       </td>
                       <td className="py-2 px-3 font-mono tabular-nums text-right font-semibold text-[var(--accent-teal)]">
                         S/ {c.cuotaTotal.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
                       </td>
                       <td className="py-2 px-3 font-mono tabular-nums text-right">
                         S/{" "}
-                        {c.amortizacionCapital.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
+                        {c.amortizacionCapital.toLocaleString("es-PE", {
+                          minimumFractionDigits: 2,
+                        })}
                       </td>
                       <td className="py-2 px-3 font-mono tabular-nums text-right">
                         {c.ratioCuotaUtilidad !== null
                           ? `${(c.ratioCuotaUtilidad * 100).toFixed(1)}%`
                           : "N/A"}
                       </td>
-                      <td className="py-2 px-3 font-medium text-[var(--text-primary)]">
-                        {c.estado}
+                      <td className="py-2 px-3">
+                        <StatusBadge estado={c.estado} />
                       </td>
                     </tr>
                   );
@@ -615,11 +684,11 @@ export function Step9Informe({
           </div>
         </div>
 
-        {/* Supuestos y limitaciones */}
+        {/* Secciones 13–14: Supuestos financieros y Limitaciones */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-[var(--text-secondary)] border-t border-[var(--border-hairline)] pt-6">
           <div>
             <h4 className="font-semibold text-[var(--text-primary)] mb-2">
-              Supuestos financieros aplicados
+              13. Supuestos financieros aplicados (Base 360)
             </h4>
             <ul className="space-y-1.5 list-disc pl-4">
               <li>TEA constante durante toda la vida del crédito; conversión base 360.</li>
@@ -636,7 +705,7 @@ export function Step9Informe({
           </div>
           <div>
             <h4 className="font-semibold text-[var(--text-primary)] mb-2">
-              Limitaciones de información
+              14. Limitaciones, procedencia de datos y advertencias
             </h4>
             <ul className="space-y-1.5 list-disc pl-4">
               <li>
@@ -650,13 +719,14 @@ export function Step9Informe({
                   : "serie anual completa"}
                 ).
               </li>
+              <li>{trazabilidad.avisoNoGarantia}</li>
               <li>
                 Las pruebas de estrés externo representan escenarios hipotéticos, no pronósticos
                 climáticos ni predicciones reales.
               </li>
               <li>
                 Este documento proviene de un prototipo Cajathon 2026 y no representa una
-                aprobación crediticia automática.
+                aprobación crediticia automática ni conexión con sistemas de Caja Trujillo.
               </li>
             </ul>
           </div>
