@@ -20,7 +20,7 @@ export function CollapsiblePanel({
 
   return (
     <div
-      className={`border border-[var(--border-hairline)] rounded-lg bg-[var(--bg-elevated)] overflow-hidden ${className}`}
+      className={`border border-[var(--border-hairline)] rounded-lg bg-[var(--bg-elevated)] overflow-hidden print:overflow-visible print:bg-white ${className}`}
     >
       <button
         type="button"
@@ -36,7 +36,7 @@ export function CollapsiblePanel({
             </span>
           )}
           <ChevronDown
-            className={`w-4 h-4 text-[var(--text-muted)] transition-transform duration-150 ${
+            className={`w-4 h-4 text-[var(--text-muted)] transition-transform duration-150 print:hidden ${
               open ? "rotate-180" : ""
             }`}
             aria-hidden="true"
@@ -47,7 +47,7 @@ export function CollapsiblePanel({
       <div
         className={`${
           open ? "block" : "hidden print:block"
-        } px-4 pb-4 pt-3 border-t border-[var(--border-hairline)] bg-[var(--bg-surface)]`}
+        } px-4 pb-4 pt-3 border-t border-[var(--border-hairline)] bg-[var(--bg-surface)] print:bg-white`}
       >
         {children}
       </div>

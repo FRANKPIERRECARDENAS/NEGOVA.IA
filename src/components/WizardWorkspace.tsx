@@ -168,7 +168,7 @@ export function WizardWorkspace({
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen flex flex-col bg-[var(--bg-canvas)] text-[var(--text-primary)] transition-colors duration-200">
+      <div className="min-h-screen flex flex-col bg-[var(--bg-canvas)] text-[var(--text-primary)] transition-colors duration-200 print:min-h-0 print:bg-white">
         {/* Cabecera del espacio de análisis */}
         <header className="no-print bg-[var(--bg-surface)] border-b border-[var(--border-hairline)] sm:sticky sm:top-0 z-30">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-2.5">
@@ -335,8 +335,8 @@ export function WizardWorkspace({
         </header>
 
         {/* Lienzo principal de la etapa activa */}
-        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 lg:py-10">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-xl p-6 sm:p-8 lg:p-10">
+        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 lg:py-10 print:max-w-none print:p-0">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-xl p-6 sm:p-8 lg:p-10 print:bg-white print:border-0 print:rounded-none print:p-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}

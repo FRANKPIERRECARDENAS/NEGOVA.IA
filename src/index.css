@@ -153,14 +153,55 @@
 }
 
 @media print {
+  @page {
+    size: auto;
+    margin: 12mm;
+  }
+
+  :root,
+  .dark {
+    color-scheme: light;
+    --bg-canvas: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-subtle: #f1f5f9;
+    --bg-elevated: #f8fafc;
+    --bg-ink: #0a1628;
+    --text-primary: #0a1628;
+    --text-secondary: #334155;
+    --text-muted: #475569;
+    --border-hairline: #cbd5e1;
+    --border-strong: #94a3b8;
+    --accent-teal: #0c7c7b;
+    --accent-teal-soft: #f0fdfa;
+    --accent-positive: #15803d;
+    --accent-warning: #b45309;
+    --accent-risk: #be123c;
+    --chart-grid: #e2e8f0;
+    --chart-tick: #475569;
+    --chart-bar-base: #94a3b8;
+    --chart-bar-secondary: #2b4c7e;
+  }
+
   .no-print {
     display: none !important;
   }
+
   .print-only {
     display: block !important;
   }
+
+  html,
   body {
     background: #ffffff !important;
     color: #0a1628 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .recharts-wrapper,
+  .recharts-surface {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
   }
 }
