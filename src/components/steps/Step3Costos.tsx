@@ -5,6 +5,8 @@ import {
   MesVenta,
   TipoEstructuraCostos,
 } from "../../types/negova";
+import { CollapsiblePanel } from "./CollapsiblePanel";
+import { StepVisual } from "./StepVisual";
 
 interface Step3CostosProps {
   costos: EstructuraCostos;
@@ -57,16 +59,18 @@ export function Step3Costos({
   };
 
   return (
-    <div className="space-y-8">
-      <div className="pb-5 border-b border-[var(--border-hairline)]">
-        <p className="text-xs font-mono text-[var(--accent-teal)]">Etapa 03 · Márgenes y egresos</p>
-        <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
-          3. Estructura de costos
-        </h2>
-        <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
-          Registra los costos de producción o adquisición, gastos operativos y carga tributaria
-          según la condición de formalidad ({formalidad}).
-        </p>
+    <div className="space-y-7">
+      <div className="pb-5 border-b border-[var(--border-hairline)] flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-mono text-[var(--accent-teal)]">03 · Márgenes</p>
+          <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
+            Estructura de costos
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
+            Costos de producción, gastos operativos y tributos ({formalidad}).
+          </p>
+        </div>
+        <StepVisual step={3} />
       </div>
 
       {/* Modalidad de costos */}
@@ -76,15 +80,13 @@ export function Step3Costos({
             key={modo}
             type="button"
             onClick={() => setTipoEstructura(modo)}
-            className={`px-3.5 py-2 text-xs font-medium rounded-md transition-colors ${
+            className={`px-3.5 py-2 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
               costos.tipoEstructura === modo
                 ? "bg-[var(--bg-surface)] text-[var(--text-primary)] font-semibold shadow-2xs"
                 : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             }`}
           >
-            {modo === "Proporcional al ciclo"
-              ? "Proporcional a las ventas del ciclo"
-              : "Costo base mensual (con ajuste estacional)"}
+            {modo === "Proporcional al ciclo" ? "Proporcional a ventas" : "Base fija mensual"}
           </button>
         ))}
       </div>
@@ -95,14 +97,14 @@ export function Step3Costos({
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {costos.tipoEstructura === "Proporcional al ciclo" ? (
           <div>
             <label
               htmlFor="costo-adq-pct"
               className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
             >
-              Costo de producción o adquisición (% sobre ventas)
+              Costo de adquisición (% ventas)
             </label>
             <div className="relative">
               <input
@@ -124,8 +126,8 @@ export function Step3Costos({
                 %
               </span>
             </div>
-            <p className="text-[11px] text-[var(--text-muted)] mt-1.5 font-mono tabular-nums">
-              Equivalente prom.: S/ {costoAdqEst.toLocaleString("es-PE")} / mes
+            <p className="text-[11px] text-[var(--text-muted)] mt-1 font-mono tabular-nums">
+              ≈ S/ {costoAdqEst.toLocaleString("es-PE")} / mes
             </p>
           </div>
         ) : (
@@ -134,7 +136,7 @@ export function Step3Costos({
               htmlFor="costo-adq-fijo"
               className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
             >
-              Costo mensual base de producción/adquisición (S/)
+              Costo base mensual (S/)
             </label>
             <input
               id="costo-adq-fijo"
@@ -158,7 +160,7 @@ export function Step3Costos({
             htmlFor="gastos-operativos"
             className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
-            Gastos operativos mensuales (alquiler, personal, servicios)
+            Gastos operativos (S/ mes)
           </label>
           <input
             id="gastos-operativos"
@@ -181,7 +183,7 @@ export function Step3Costos({
             htmlFor="tasa-tributaria"
             className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
-            Gastos tributarios efectivos (% sobre ventas)
+            Tributos efectivos (% ventas)
           </label>
           <div className="relative">
             <input
@@ -203,18 +205,18 @@ export function Step3Costos({
               %
             </span>
           </div>
-          <p className="text-[11px] text-[var(--text-muted)] mt-1.5 font-mono tabular-nums">
-            Equivalente prom.: S/ {tributoEst.toLocaleString("es-PE")} / mes
+          <p className="text-[11px] text-[var(--text-muted)] mt-1 font-mono tabular-nums">
+            ≈ S/ {tributoEst.toLocaleString("es-PE")} / mes
           </p>
         </div>
       </div>
 
       {/* Variación estacional de costos */}
       {costos.tipoEstructura === "Fija mensual" && (
-        <div className="pt-6 border-t border-[var(--border-hairline)] space-y-3">
-          <p className="text-xs font-medium text-[var(--text-secondary)]">
-            Factor multiplicador estacional de costos por mes (1.00 = mes promedio)
-          </p>
+        <CollapsiblePanel
+          title="Ajuste estacional de costos por mes"
+          summary="Opcional · 1.00 = promedio"
+        >
           <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-2">
             {MESES_CORTOS.map((mes, idx) => (
               <div
@@ -240,33 +242,33 @@ export function Step3Costos({
               </div>
             ))}
           </div>
-        </div>
+        </CollapsiblePanel>
       )}
 
       {/* Resumen de utilidad operativa estimada */}
-      <div className="bg-[var(--bg-ink)] text-[var(--text-on-ink)] border border-[var(--border-ink)] rounded-lg grid grid-cols-1 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[var(--border-ink)]">
-        <div className="p-5">
-          <p className="text-xs text-[var(--text-on-ink-muted)]">Ventas prom. registradas</p>
-          <p className="text-lg font-semibold font-mono tabular-nums mt-1.5">
+      <div className="bg-[var(--bg-ink)] text-[var(--text-on-ink)] border border-[var(--border-ink)] rounded-lg grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[var(--border-ink)]">
+        <div className="p-4 sm:p-5">
+          <p className="text-xs text-[var(--text-on-ink-muted)]">Ventas prom.</p>
+          <p className="text-lg font-semibold font-mono tabular-nums mt-1">
             S/ {Math.round(promedioVentas).toLocaleString("es-PE")}
           </p>
         </div>
-        <div className="p-5">
-          <p className="text-xs text-[var(--text-on-ink-muted)]">Costo adquisición/prod.</p>
-          <p className="text-lg font-semibold font-mono tabular-nums mt-1.5">
+        <div className="p-4 sm:p-5">
+          <p className="text-xs text-[var(--text-on-ink-muted)]">Costo prod.</p>
+          <p className="text-lg font-semibold font-mono tabular-nums mt-1">
             S/ {costoAdqEst.toLocaleString("es-PE")}
           </p>
         </div>
-        <div className="p-5">
-          <p className="text-xs text-[var(--text-on-ink-muted)]">Gastos op. + tributos</p>
-          <p className="text-lg font-semibold font-mono tabular-nums mt-1.5">
+        <div className="p-4 sm:p-5">
+          <p className="text-xs text-[var(--text-on-ink-muted)]">Op. + tributos</p>
+          <p className="text-lg font-semibold font-mono tabular-nums mt-1">
             S/ {(costos.gastosOperativosMensuales + tributoEst).toLocaleString("es-PE")}
           </p>
         </div>
-        <div className="p-5">
-          <p className="text-xs text-[var(--accent-teal-ink)]">Utilidad neta operativa prom.</p>
+        <div className="p-4 sm:p-5">
+          <p className="text-xs text-[var(--accent-teal-ink)]">Utilidad neta prom.</p>
           <p
-            className={`text-lg font-semibold font-mono tabular-nums mt-1.5 ${
+            className={`text-lg font-semibold font-mono tabular-nums mt-1 ${
               utilidadOpEstimada > 0 ? "text-[var(--accent-teal-ink)]" : "text-rose-300"
             }`}
           >

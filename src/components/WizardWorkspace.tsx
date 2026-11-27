@@ -198,8 +198,7 @@ export function WizardWorkspace({
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[var(--accent-teal)] bg-[var(--accent-teal-soft)] border border-[var(--accent-teal)]/25 rounded-lg hover:opacity-85 transition-opacity whitespace-nowrap"
               >
                 <Database className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                <span className="sm:hidden">Casos demo</span>
-                <span className="hidden sm:inline">Explorar casos de demostración</span>
+                <span>Casos demo</span>
               </button>
 
               <div className="relative">
@@ -216,11 +215,11 @@ export function WizardWorkspace({
                 {showSavedMenu && (
                   <div className="absolute right-0 mt-2 w-72 bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-xl shadow-xl p-2 z-40">
                     <p className="text-[11px] font-mono text-[var(--text-muted)] px-2 py-1">
-                      Casos guardados localmente
+                      Casos guardados
                     </p>
                     {savedCases.length === 0 ? (
                       <p className="text-xs text-[var(--text-muted)] px-2 py-3">
-                        Aún no hay casos guardados. Puedes guardar desde el Informe (Paso 9).
+                        Sin casos guardados. Guarda desde el Paso 9.
                       </p>
                     ) : (
                       <div className="max-h-60 overflow-y-auto divide-y divide-[var(--border-hairline)]">
@@ -254,8 +253,7 @@ export function WizardWorkspace({
                 onClick={onOpenExperience}
                 className="inline-flex px-2.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap"
               >
-                <span className="sm:hidden">Recorrido</span>
-                <span className="hidden sm:inline">Ver recorrido</span>
+                Recorrido
               </button>
 
               <button

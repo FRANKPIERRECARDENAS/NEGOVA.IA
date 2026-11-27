@@ -1,4 +1,6 @@
 import { CapacidadEconomica, CondicionFormalidad } from "../../types/negova";
+import { CollapsiblePanel } from "./CollapsiblePanel";
+import { StepVisual } from "./StepVisual";
 
 interface Step4CapacidadProps {
   capacidad: CapacidadEconomica;
@@ -18,64 +20,49 @@ export function Step4Capacidad({
     formalidad === "Persona jurídica 100% formal (EE.FF. auditados)";
 
   return (
-    <div className="space-y-8">
-      <div className="pb-5 border-b border-[var(--border-hairline)]">
-        <p className="text-xs font-mono text-[var(--accent-teal)]">Etapa 04 · Respaldo y cargas</p>
-        <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
-          4. Capacidad económica
-        </h2>
-        <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
-          Diferencia las obligaciones del negocio de las cargas personales o familiares según el
-          régimen del solicitante ({formalidad}).
-        </p>
-      </div>
-
-      {/* Nota de cumplimiento ético */}
-      <div className="bg-[var(--bg-elevated)] border border-[var(--border-hairline)] rounded-lg px-4 py-3 text-xs text-[var(--text-secondary)]">
-        Regla metodológica activa:{" "}
-        <strong className="font-semibold text-[var(--text-primary)]">
-          no se solicita ni utiliza sexo ni edad
-        </strong>{" "}
-        del solicitante para predecir el ciclo económico ni determinar las cuotas del cronograma.
-      </div>
-
-      {esJuridicaFormal ? (
-        <div className="bg-[var(--accent-teal-soft)] border border-[var(--accent-teal)]/30 rounded-lg p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold text-[var(--text-primary)]">
-                Persona jurídica 100% formal
-              </p>
-              <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-                Las finanzas corporativas se evalúan de forma independiente; no se incorporan
-                cargas familiares ni deudas personales en el flujo del negocio.
-              </p>
-            </div>
-            <label className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-primary)] shrink-0 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={capacidad.usaEstadosFinancierosAuditados}
-                onChange={(e) =>
-                  onChange({
-                    ...capacidad,
-                    usaEstadosFinancierosAuditados: e.target.checked,
-                  })
-                }
-                className="w-4 h-4 accent-[var(--accent-teal)]"
-              />
-              Estados financieros auditados
-            </label>
-          </div>
+    <div className="space-y-7">
+      <div className="pb-5 border-b border-[var(--border-hairline)] flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-mono text-[var(--accent-teal)]">04 · Respaldo y cargas</p>
+          <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] mt-1">
+            Capacidad económica
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
+            Obligaciones del negocio y cargas familiares ({formalidad}).
+          </p>
         </div>
-      ) : null}
+        <StepVisual step={4} />
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {esJuridicaFormal && (
+        <div className="bg-[var(--accent-teal-soft)] border border-[var(--accent-teal)]/30 rounded-lg px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p className="text-xs font-medium text-[var(--text-primary)]">
+            Persona jurídica formal: se evalúa flujo corporativo sin cargas personales.
+          </p>
+          <label className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-primary)] shrink-0 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={capacidad.usaEstadosFinancierosAuditados}
+              onChange={(e) =>
+                onChange({
+                  ...capacidad,
+                  usaEstadosFinancierosAuditados: e.target.checked,
+                })
+              }
+              className="w-4 h-4 accent-[var(--accent-teal)]"
+            />
+            EE.FF. auditados
+          </label>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
           <label
             htmlFor="deudas-negocio"
             className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
-            Cuotas mensuales de deudas vigentes del negocio (S/)
+            Deudas vigentes del negocio (S/ mes)
           </label>
           <input
             id="deudas-negocio"
@@ -98,7 +85,7 @@ export function Step4Capacidad({
             htmlFor="patrimonio-declarado"
             className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
-            Patrimonio neto o respaldo de activos del negocio (S/)
+            Patrimonio o activos del negocio (S/)
           </label>
           <input
             id="patrimonio-declarado"
@@ -123,7 +110,7 @@ export function Step4Capacidad({
                 htmlFor="otras-fuentes"
                 className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
               >
-                Otras fuentes de ingreso mensual verificables (S/)
+                Otros ingresos verificables (S/ mes)
               </label>
               <input
                 id="otras-fuentes"
@@ -146,7 +133,7 @@ export function Step4Capacidad({
                 htmlFor="deudas-personales"
                 className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
               >
-                Cuotas de otras deudas personales vigentes (S/)
+                Deudas personales vigentes (S/ mes)
               </label>
               <input
                 id="deudas-personales"
@@ -169,7 +156,7 @@ export function Step4Capacidad({
                 htmlFor="carga-familiar"
                 className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
               >
-                Carga familiar y gastos esenciales del hogar (S/)
+                Carga familiar y hogar (S/ mes)
               </label>
               <input
                 id="carga-familiar"
@@ -194,7 +181,7 @@ export function Step4Capacidad({
             htmlFor="obligaciones-desc"
             className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5"
           >
-            Detalle de obligaciones financieras vigentes
+            Detalle de obligaciones
           </label>
           <input
             id="obligaciones-desc"
@@ -206,11 +193,21 @@ export function Step4Capacidad({
                 obligacionesVigentesDescripcion: e.target.value,
               })
             }
-            placeholder="Ej. Crédito capital de trabajo vigente / sin deudas adicionales"
+            placeholder="Ej. Sin deudas adicionales"
             className="w-full h-11 px-3.5 text-sm bg-[var(--bg-canvas)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] border border-[var(--border-hairline)] rounded-lg focus:outline-none focus:border-[var(--accent-teal)] transition-colors"
           />
         </div>
       </div>
+
+      <CollapsiblePanel
+        title="Criterio de evaluación imparcial"
+        summary="Sin sexo ni edad"
+      >
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+          No se solicita ni utiliza sexo ni edad del solicitante para estimar el ciclo económico ni
+          calcular las cuotas del cronograma.
+        </p>
+      </CollapsiblePanel>
     </div>
   );
 }
