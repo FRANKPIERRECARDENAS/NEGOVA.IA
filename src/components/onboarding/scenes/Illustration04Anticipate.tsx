@@ -20,7 +20,7 @@ export function Illustration04Anticipate() {
       return;
     }
     setWeatherActive(false);
-    const t = window.setTimeout(() => setWeatherActive(true), 550);
+    const t = window.setTimeout(() => setWeatherActive(true), 1100);
     return () => window.clearTimeout(t);
   }, [reduced]);
 
@@ -66,7 +66,7 @@ export function Illustration04Anticipate() {
         <motion.g
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         >
           <rect
             x="0"
@@ -101,7 +101,7 @@ export function Illustration04Anticipate() {
             rx="8"
             fill="var(--accent-warning)"
             animate={{ opacity: weatherActive ? 0.11 : 0 }}
-            transition={{ duration: 0.45 }}
+            transition={{ duration: 0.9 }}
           />
 
           {/* Curva base punteada */}
@@ -118,7 +118,7 @@ export function Illustration04Anticipate() {
           <motion.path
             d={activePath}
             animate={{ d: activePath }}
-            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.3, ease: [0.16, 1, 0.3, 1] }}
             fill="none"
             stroke={weatherActive ? "var(--accent-warning)" : "var(--accent-teal)"}
             strokeWidth="3.2"
@@ -132,7 +132,7 @@ export function Illustration04Anticipate() {
                 opacity: weatherActive ? 1 : 0.25,
                 y: weatherActive ? 0 : -6,
               }}
-              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
             >
               <path
                 d="M22 44 C10 44, 2 35, 4 24 C6 15, 14 10, 23 12 C28 3, 42 1, 52 8 C62 8, 71 15, 72 25 C79 27, 83 35, 79 41 C77 44, 72 44, 67 44 Z"
@@ -179,27 +179,48 @@ export function Illustration04Anticipate() {
         <ellipse cx="177" cy="313" rx="11" ry="3.5" fill="#0A1628" />
         <ellipse cx="212" cy="313" rx="11" ry="3.5" fill="#0A1628" />
 
-        <path
-          d="M166 144 C166 132, 178 126, 195 126 C210 126, 222 134, 222 146 L216 228 L172 228 Z"
-          fill="#D8D2C5"
-        />
-        <path d="M174 146 L214 146 L218 232 L172 232 Z" fill="#2B4C7E" opacity="0.92" />
+        {/* Respiración y atención del tren superior */}
+        <motion.g
+          animate={reduced ? undefined : { y: [0, -3.15, 0], rotate: [0, 1.9, -0.6, 0] }}
+          transition={{ duration: 2.9, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: "194px 228px" }}
+        >
+          <path
+            d="M166 144 C166 132, 178 126, 195 126 C210 126, 222 134, 222 146 L216 228 L172 228 Z"
+            fill="#D8D2C5"
+          />
+          <path d="M174 146 L214 146 L218 232 L172 232 Z" fill="#2B4C7E" opacity="0.92" />
 
-        <path
-          d="M208 150 C226 160, 242 158, 256 150"
-          fill="none"
-          stroke="#D8D2C5"
-          strokeWidth="12"
-          strokeLinecap="round"
-        />
-        <circle cx="258" cy="149" r="5.5" fill="#C88F71" />
+          {/* Gesto del brazo observando el ajuste */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, -7.9, 1.9, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "208px 150px" }}
+          >
+            <path
+              d="M208 150 C226 160, 242 158, 256 150"
+              fill="none"
+              stroke="#D8D2C5"
+              strokeWidth="12"
+              strokeLinecap="round"
+            />
+            <circle cx="258" cy="149" r="5.5" fill="#C88F71" />
+          </motion.g>
 
-        <rect x="188" y="110" width="12" height="17" rx="5" fill="#B87E61" />
-        <circle cx="195" cy="94" r="18" fill="#C88F71" />
-        <path
-          d="M177 92 C178 78, 194 74, 207 79 C214 83, 214 91, 210 95 C202 89, 187 88, 177 92 Z"
-          fill="#161F2E"
-        />
+          {/* Mirada elevándose hacia el evento climático */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, -7.7, 2.2, 0] }}
+            transition={{ duration: 3.0, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "194px 124px" }}
+          >
+            <rect x="188" y="110" width="12" height="17" rx="5" fill="#B87E61" />
+            <circle cx="195" cy="94" r="18" fill="#C88F71" />
+            <path
+              d="M177 92 C178 78, 194 74, 207 79 C214 83, 214 91, 210 95 C202 89, 187 88, 177 92 Z"
+              fill="#161F2E"
+            />
+          </motion.g>
+        </motion.g>
       </motion.g>
     </svg>
   );

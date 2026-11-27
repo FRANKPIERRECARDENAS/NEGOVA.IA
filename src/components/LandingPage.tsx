@@ -1,8 +1,7 @@
-import { useMemo } from "react";
 import { ArrowRight } from "lucide-react";
-import { computeSyntheticValidationIndicators } from "../engines/validationBenchmarks";
 import { BrandLogo } from "./BrandLogo";
 import { HeroExplainer } from "./HeroExplainer";
+import { PrincipleIllustration } from "./PrincipleIllustrations";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 
 interface LandingPageProps {
@@ -16,22 +15,19 @@ interface LandingPageProps {
 
 const PRINCIPIOS = [
   {
-    index: "01",
+    index: "01" as const,
     titulo: "Ritmo económico",
-    descripcion:
-      "Cada microempresa opera bajo campañas, cosechas o variaciones climáticas propias. Medimos su liquidez real mes a mes en lugar de asumir ingresos planos.",
+    frase: "Medimos la liquidez real detrás de cada campaña.",
   },
   {
-    index: "02",
+    index: "02" as const,
     titulo: "Inteligencia predictiva",
-    descripcion:
-      "Cruzamos el historial disponible con patrones sectoriales, exposición geográfica y estructura de costos para proyectar utilidad neta disponible y banda de incertidumbre.",
+    frase: "Proyectamos liquidez futura con certeza.",
   },
   {
-    index: "03",
+    index: "03" as const,
     titulo: "Adaptación financiera",
-    descripcion:
-      "Calculamos cronogramas bajo base 360 donde cada cuota respeta el factor máximo de capacidad de pago, reduciendo el estrés en meses bajos sin ocultar costos.",
+    frase: "Ajustamos cada cuota a la capacidad real del mes.",
   },
 ] as const;
 
@@ -43,8 +39,6 @@ export function LandingPage({
   onExploreDemoCases,
   onOpenExperience,
 }: LandingPageProps) {
-  const indicators = useMemo(() => computeSyntheticValidationIndicators(), []);
-
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg-canvas)] text-[var(--text-primary)] transition-colors duration-200">
       {/* Barra superior institucional */}
@@ -115,21 +109,12 @@ export function LandingPage({
           <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
               <div className="lg:col-span-5 space-y-6">
-                <p className="text-xs font-mono tracking-wide text-[var(--accent-teal)]">
-                  Crédito adaptativo · Desafío NEG-01
-                </p>
-
                 <h1
                   className="font-display font-semibold tracking-tight text-[var(--text-primary)] leading-[1.08] text-balance"
                   style={{ fontSize: "clamp(2.35rem, 4.1vw, 3.6rem)" }}
                 >
                   Cada negocio tiene su propio ritmo. Su crédito también.
                 </h1>
-
-                <p className="text-base lg:text-[17px] text-[var(--text-secondary)] leading-relaxed max-w-lg">
-                  Inteligencia predictiva que transforma los ciclos económicos en planes de pago
-                  adaptados.
-                </p>
 
                 <div className="flex flex-wrap items-center gap-4 pt-1">
                   <button
@@ -158,28 +143,6 @@ export function LandingPage({
                     Ver recorrido introductorio →
                   </button>
                 </div>
-
-                {/* Cifras verificadas en línea tipográfica limpia */}
-                <div className="pt-6 border-t border-[var(--border-hairline)] grid grid-cols-3 gap-4">
-                  <div>
-                    <p className="font-mono tabular-nums text-lg font-semibold text-[var(--text-primary)]">
-                      {indicators.totalPerfilesBase.toLocaleString("es-PE")}
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)] mt-0.5">Perfiles sintéticos</p>
-                  </div>
-                  <div>
-                    <p className="font-mono tabular-nums text-lg font-semibold text-[var(--accent-teal)]">
-                      {indicators.porcentajeCronogramasAdaptadosViables}%
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)] mt-0.5">Viabilidad adaptada</p>
-                  </div>
-                  <div>
-                    <p className="font-mono tabular-nums text-lg font-semibold text-[var(--text-primary)]">
-                      Base 360
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)] mt-0.5">Prelación estricta</p>
-                  </div>
-                </div>
               </div>
 
               <div id="como-funciona" className="lg:col-span-7">
@@ -206,75 +169,21 @@ export function LandingPage({
 
           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--border-hairline)] border-t border-b border-[var(--border-hairline)]">
             {PRINCIPIOS.map((item) => (
-              <div key={item.index} className="py-8 md:py-10 md:px-8 first:md:pl-0 last:md:pr-0 space-y-3">
-                <span className="font-mono text-xs text-[var(--accent-teal)] block">
-                  {item.index}
-                </span>
-                <h3 className="font-display text-xl font-semibold text-[var(--text-primary)]">
-                  {item.titulo}
-                </h3>
-                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                  {item.descripcion}
-                </p>
+              <div key={item.index} className="py-8 md:py-10 md:px-8 first:md:pl-0 last:md:pr-0 flex flex-col gap-5">
+                <div className="space-y-1.5">
+                  <span className="font-mono text-xs text-[var(--accent-teal)] block">
+                    {item.index}
+                  </span>
+                  <h3 className="font-display text-xl font-semibold text-[var(--text-primary)]">
+                    {item.titulo}
+                  </h3>
+                  <p className="text-sm text-[var(--text-secondary)]">
+                    {item.frase}
+                  </p>
+                </div>
+                <PrincipleIllustration index={item.index} />
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* Evidencia de validación sintética adyacente */}
-        <section className="max-w-7xl mx-auto px-6 py-16 lg:py-20">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-xl p-8 lg:p-10">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-[var(--border-hairline)]">
-              <div className="space-y-2 max-w-2xl">
-                <p className="text-xs font-mono text-[var(--accent-teal)]">
-                  Validación fuera de muestra ({indicators.perfilesPruebaHoldout} perfiles reservados)
-                </p>
-                <h2 className="font-display text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
-                  Precisión cuantitativa sin datos reales de cartera
-                </h2>
-                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                  {indicators.notaMetodologica}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={onOpenIndicators}
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-[var(--text-primary)] border border-[var(--border-strong)] hover:bg-[var(--bg-subtle)] rounded-lg transition-colors whitespace-nowrap shrink-0 self-start lg:self-center"
-              >
-                Ver indicadores completos
-                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8">
-              <div>
-                <p className="text-xs text-[var(--text-muted)]">Incumplimientos en holdout</p>
-                <p className="font-mono tabular-nums text-2xl font-semibold text-[var(--accent-positive)] mt-1.5">
-                  {indicators.incumplimientosAdaptado}
-                  <span className="text-xs font-normal text-[var(--text-muted)] ml-2">
-                    vs. {indicators.incumplimientosTradicional} fijo
-                  </span>
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-[var(--text-muted)]">Reducción de presión máxima</p>
-                <p className="font-mono tabular-nums text-2xl font-semibold text-[var(--text-primary)] mt-1.5">
-                  {indicators.reduccionRatioPromedioPct}%
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-[var(--text-muted)]">Error porcentual WAPE</p>
-                <p className="font-mono tabular-nums text-2xl font-semibold text-[var(--text-primary)] mt-1.5">
-                  {indicators.wapePredictivoPct}%
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-[var(--text-muted)]">Tiempo promedio por perfil</p>
-                <p className="font-mono tabular-nums text-2xl font-semibold text-[var(--text-primary)] mt-1.5">
-                  {indicators.tiempoPromedioMs} ms
-                </p>
-              </div>
-            </div>
           </div>
         </section>
       </main>

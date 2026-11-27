@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { buildSmoothSvgPath } from "../onboardingLogic";
+import { usePrefersReducedMotion } from "../useStageProgress";
 
 const CYCLE_CURVE = [34, 28, 42, 62, 86, 94, 82, 60, 44, 38, 52, 68];
 
@@ -8,6 +9,7 @@ const CYCLE_CURVE = [34, 28, 42, 62, 86, 94, 82, 60, 44, 38, 52, 68];
  * Una persona observando una curva económica que representa los ciclos de ingresos de un negocio.
  */
 export function Illustration02Predict() {
+  const reduced = usePrefersReducedMotion();
   const curveX = 278;
   const curveY = 64;
   const curveW = 370;
@@ -51,7 +53,7 @@ export function Illustration02Predict() {
         <motion.g
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         >
           <rect
             x="0"
@@ -87,7 +89,7 @@ export function Illustration02Predict() {
             strokeDasharray="4 6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.45 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 1.0, delay: 0.4 }}
           />
 
           <motion.path
@@ -95,7 +97,7 @@ export function Illustration02Predict() {
             fill="url(#ill02CurveArea)"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.65, delay: 0.15 }}
+            transition={{ duration: 1.3, delay: 0.3 }}
           />
 
           <path
@@ -104,13 +106,13 @@ export function Illustration02Predict() {
             stroke="var(--accent-teal)"
             strokeWidth="3.2"
             strokeLinecap="round"
-            className="animate-curve-draw"
+            className="animate-curve-draw-slow"
           />
 
           {[
-            { idx: 1, color: "var(--accent-warning)", delay: 0.35 },
-            { idx: 5, color: "var(--accent-teal)", delay: 0.45 },
-            { idx: 9, color: "var(--accent-warning)", delay: 0.55 },
+            { idx: 1, color: "var(--accent-warning)", delay: 0.7 },
+            { idx: 5, color: "var(--accent-teal)", delay: 0.9 },
+            { idx: 9, color: "var(--accent-warning)", delay: 1.1 },
           ].map((pt) => {
             const x = 16 + (pt.idx / 11) * (curveW - 32);
             const y = curveH - 24 - (CYCLE_CURVE[pt.idx] / 100) * (curveH - 48);
@@ -125,7 +127,7 @@ export function Illustration02Predict() {
                 strokeWidth="2.5"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.35, delay: pt.delay }}
+                transition={{ duration: 0.7, delay: pt.delay }}
               />
             );
           })}
@@ -138,38 +140,61 @@ export function Illustration02Predict() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
       >
+        <rect x="173" y="218" width="40" height="14" rx="4" fill="#0F1D32" />
         <path d="M174 222 L170 312 L184 312 L190 226 Z" fill="#172842" />
         <path d="M196 224 L204 312 L218 312 L212 222 Z" fill="#0F1D32" />
         <ellipse cx="177" cy="313" rx="11" ry="3.5" fill="#0A1628" />
         <ellipse cx="212" cy="313" rx="11" ry="3.5" fill="#0A1628" />
 
-        <path
-          d="M166 142 C166 130, 178 124, 195 124 C210 124, 222 134, 222 146 L216 226 L172 226 Z"
-          fill="#2B4C7E"
-        />
-        <path
-          d="M210 148 C230 154, 246 150, 260 140"
-          fill="none"
-          stroke="#355C96"
-          strokeWidth="12.5"
-          strokeLinecap="round"
-        />
-        <circle cx="262" cy="139" r="5.5" fill="#E2B49A" />
+        {/* Respiración y balanceo expresivo */}
+        <motion.g
+          animate={reduced ? undefined : { y: [0, -3.3, 0], rotate: [0, 2.2, -0.7, 0] }}
+          transition={{ duration: 2.9, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: "194px 226px" }}
+        >
+          <path
+            d="M166 142 C166 130, 178 124, 195 124 C210 124, 222 134, 222 146 L216 226 L172 226 Z"
+            fill="#2B4C7E"
+          />
 
-        <path
-          d="M174 148 C166 176, 174 198, 188 202"
-          fill="none"
-          stroke="#1E3A5F"
-          strokeWidth="12"
-          strokeLinecap="round"
-        />
+          {/* Brazo señalando la curva */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, -8.75, 2.2, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "210px 148px" }}
+          >
+            <path
+              d="M210 148 C230 154, 246 150, 260 140"
+              fill="none"
+              stroke="#355C96"
+              strokeWidth="12.5"
+              strokeLinecap="round"
+            />
+            <circle cx="262" cy="139" r="5.5" fill="#E2B49A" />
+          </motion.g>
 
-        <rect x="188" y="108" width="12" height="18" rx="5" fill="#D5A084" />
-        <circle cx="196" cy="92" r="18" fill="#E2B49A" />
-        <path
-          d="M178 92 C178 76, 194 70, 208 75 C215 78, 216 86, 212 90 C203 84, 189 85, 178 92 Z"
-          fill="#0A1628"
-        />
+          <path
+            d="M174 148 C166 176, 174 198, 188 202"
+            fill="none"
+            stroke="#1E3A5F"
+            strokeWidth="12"
+            strokeLinecap="round"
+          />
+
+          {/* Cabeza recorriendo visualmente el ciclo */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, -6.1, 3.9, 0] }}
+            transition={{ duration: 3.1, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "194px 122px" }}
+          >
+            <rect x="188" y="108" width="12" height="18" rx="5" fill="#D5A084" />
+            <circle cx="196" cy="92" r="18" fill="#E2B49A" />
+            <path
+              d="M178 92 C178 76, 194 70, 208 75 C215 78, 216 86, 212 90 C203 84, 189 85, 178 92 Z"
+              fill="#0A1628"
+            />
+          </motion.g>
+        </motion.g>
       </motion.g>
     </svg>
   );

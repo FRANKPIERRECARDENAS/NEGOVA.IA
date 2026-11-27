@@ -1,10 +1,13 @@
 import { motion } from "motion/react";
+import { usePrefersReducedMotion } from "../useStageProgress";
 
 /**
  * 01. CONOCE
  * Un asesor conversando con un pequeño empresario mientras registra sus datos.
  */
 export function Illustration01Know() {
+  const reduced = usePrefersReducedMotion();
+
   return (
     <svg
       viewBox="0 0 760 360"
@@ -74,66 +77,91 @@ export function Illustration01Know() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Piernas y zapatos */}
+        {/* Piernas y zapatos anclados al suelo */}
+        <rect x="241" y="218" width="42" height="14" rx="4" fill="#0F1D32" />
         <path d="M242 222 L236 312 L250 312 L258 228 Z" fill="#172842" />
         <path d="M266 224 L274 312 L288 312 L282 222 Z" fill="#0F1D32" />
         <ellipse cx="244" cy="313" rx="11" ry="3.5" fill="#0A1628" />
         <ellipse cx="283" cy="313" rx="11" ry="3.5" fill="#0A1628" />
 
-        {/* Torso con saco editorial azul tinta */}
-        <path
-          d="M232 142 C232 132, 244 126, 262 126 C280 126, 290 134, 290 146 L286 228 L238 228 Z"
-          fill="#0F223D"
-        />
-        {/* Camisa interior limpia */}
-        <path d="M254 128 L269 128 L264 166 Z" fill="#FAF9F5" />
-
-        {/* Brazo trasero sosteniendo la tableta */}
-        <path
-          d="M278 144 C298 156, 308 176, 326 178"
-          fill="none"
-          stroke="#172E50"
-          strokeWidth="13"
-          strokeLinecap="round"
-        />
-        {/* Mano */}
-        <circle cx="329" cy="178" r="6" fill="#E2B49A" />
-
-        {/* Tableta tecnológica minimalista */}
-        <g transform="translate(318, 152) rotate(-14)">
-          <rect
-            x="0"
-            y="0"
-            width="44"
-            height="30"
-            rx="5"
-            fill="var(--bg-surface)"
-            stroke="var(--accent-teal)"
-            strokeWidth="1.6"
-            filter="url(#ill01SoftShadow)"
+        {/* Respiración y postura del tren superior */}
+        <motion.g
+          animate={reduced ? undefined : { y: [0, -3.15, 0], rotate: [0, 2.2, -0.5, 0] }}
+          transition={{ duration: 2.9, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: "262px 226px" }}
+        >
+          {/* Torso con saco editorial azul tinta */}
+          <path
+            d="M232 142 C232 132, 244 126, 262 126 C280 126, 290 134, 290 146 L286 228 L238 228 Z"
+            fill="#0F223D"
           />
-          <line x1="8" y1="11" x2="26" y2="11" stroke="var(--accent-teal)" strokeWidth="2" strokeLinecap="round" />
-          <line x1="8" y1="18" x2="34" y2="18" stroke="var(--border-strong)" strokeWidth="2" strokeLinecap="round" />
-        </g>
+          {/* Camisa interior limpia */}
+          <path d="M254 128 L269 128 L264 166 Z" fill="#FAF9F5" />
 
-        {/* Brazo frontal anotando */}
-        <path
-          d="M242 146 C248 174, 272 184, 304 176"
-          fill="none"
-          stroke="#1E3A5F"
-          strokeWidth="13"
-          strokeLinecap="round"
-        />
-        <circle cx="307" cy="175" r="5.5" fill="#E2B49A" />
+          {/* Brazo trasero y tableta con leve inclinación */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, 2.1, -1.05, 0] }}
+            transition={{ duration: 2.9, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "278px 144px" }}
+          >
+            <path
+              d="M278 144 C298 156, 308 176, 326 178"
+              fill="none"
+              stroke="#172E50"
+              strokeWidth="13"
+              strokeLinecap="round"
+            />
+            <circle cx="329" cy="178" r="6" fill="#E2B49A" />
 
-        {/* Cuello y cabeza */}
-        <rect x="255" y="112" width="12" height="16" rx="5" fill="#D5A084" />
-        <circle cx="263" cy="96" r="18" fill="#E2B49A" />
-        {/* Cabello geométrico limpio */}
-        <path
-          d="M245 94 C245 80, 258 74, 271 77 C280 79, 282 88, 279 94 C272 88, 256 88, 245 94 Z"
-          fill="#0A1628"
-        />
+            {/* Tableta tecnológica minimalista */}
+            <g transform="translate(318, 152) rotate(-14)">
+              <rect
+                x="0"
+                y="0"
+                width="44"
+                height="30"
+                rx="5"
+                fill="var(--bg-surface)"
+                stroke="var(--accent-teal)"
+                strokeWidth="1.6"
+                filter="url(#ill01SoftShadow)"
+              />
+              <line x1="8" y1="11" x2="26" y2="11" stroke="var(--accent-teal)" strokeWidth="2" strokeLinecap="round" />
+              <line x1="8" y1="18" x2="34" y2="18" stroke="var(--border-strong)" strokeWidth="2" strokeLinecap="round" />
+            </g>
+          </motion.g>
+
+          {/* Brazo frontal registrando datos */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, -8.3, 2.6, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "242px 146px" }}
+          >
+            <path
+              d="M242 146 C248 174, 272 184, 304 176"
+              fill="none"
+              stroke="#1E3A5F"
+              strokeWidth="13"
+              strokeLinecap="round"
+            />
+            <circle cx="307" cy="175" r="5.5" fill="#E2B49A" />
+          </motion.g>
+
+          {/* Cuello y cabeza con asentimiento expresivo */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, 6.1, -1.6, 0] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "261px 124px" }}
+          >
+            <rect x="255" y="112" width="12" height="16" rx="5" fill="#D5A084" />
+            <circle cx="263" cy="96" r="18" fill="#E2B49A" />
+            {/* Cabello geométrico limpio */}
+            <path
+              d="M245 94 C245 80, 258 74, 271 77 C280 79, 282 88, 279 94 C272 88, 256 88, 245 94 Z"
+              fill="#0A1628"
+            />
+          </motion.g>
+        </motion.g>
       </motion.g>
 
       {/* PERSONAJE 2: Pequeño empresario (derecha) */}
@@ -142,55 +170,66 @@ export function Illustration01Know() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Piernas y zapatos */}
+        {/* Piernas y zapatos anclados al suelo */}
         <path d="M466 226 L460 312 L474 312 L482 228 Z" fill="#1E293B" />
         <path d="M488 228 L498 312 L512 312 L506 226 Z" fill="#141E2E" />
         <ellipse cx="465" cy="313" rx="11" ry="3.5" fill="#0A1628" />
         <ellipse cx="505" cy="313" rx="11" ry="3.5" fill="#0A1628" />
 
-        {/* Torso con camisa clara cálida y mandil/chaleco editorial */}
-        <path
-          d="M456 144 C456 132, 468 126, 486 126 C504 126, 514 134, 514 146 L510 228 L460 228 Z"
-          fill="#D8D2C5"
-        />
-        {/* Chaleco / mandil sutil del oficio */}
-        <path
-          d="M464 146 L504 146 L508 232 L462 232 Z"
-          fill="#2B4C7E"
-          opacity="0.92"
-        />
-
-        {/* Brazo en gesto de conversación */}
+        {/* Respiración y balanceo del tren superior */}
         <motion.g
-          animate={{ rotate: [0, -3, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          style={{ transformOrigin: "464px 148px" }}
+          animate={reduced ? undefined : { y: [0, -3.0, 0], rotate: [0, -1.9, 0.5, 0] }}
+          transition={{ duration: 3.1, delay: 0.35, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: "485px 228px" }}
         >
+          {/* Torso con camisa clara cálida y mandil/chaleco editorial */}
           <path
-            d="M464 148 C444 166, 434 176, 412 168"
-            fill="none"
-            stroke="#D8D2C5"
-            strokeWidth="12.5"
-            strokeLinecap="round"
+            d="M456 144 C456 132, 468 126, 486 126 C504 126, 514 134, 514 146 L510 228 L460 228 Z"
+            fill="#D8D2C5"
           />
-          <circle cx="409" cy="167" r="5.5" fill="#C88F71" />
-        </motion.g>
+          <path
+            d="M464 146 L504 146 L508 232 L462 232 Z"
+            fill="#2B4C7E"
+            opacity="0.92"
+          />
 
-        {/* Cuello y cabeza */}
-        <rect x="479" y="112" width="12" height="16" rx="5" fill="#B87E61" />
-        <circle cx="484" cy="96" r="18" fill="#C88F71" />
-        {/* Cabello */}
-        <path
-          d="M466 93 C467 78, 484 74, 496 80 C503 84, 503 93, 499 97 C491 90, 476 89, 466 93 Z"
-          fill="#161F2E"
-        />
+          {/* Brazo en gesto de conversación */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, -11.8, 3.1, 0] }}
+            transition={{ duration: 2.3, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "464px 148px" }}
+          >
+            <path
+              d="M464 148 C444 166, 434 176, 412 168"
+              fill="none"
+              stroke="#D8D2C5"
+              strokeWidth="12.5"
+              strokeLinecap="round"
+            />
+            <circle cx="409" cy="167" r="5.5" fill="#C88F71" />
+          </motion.g>
+
+          {/* Cuello y cabeza con inclinación de diálogo */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, -5.95, 1.9, 0] }}
+            transition={{ duration: 2.7, delay: 0.25, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "485px 124px" }}
+          >
+            <rect x="479" y="112" width="12" height="16" rx="5" fill="#B87E61" />
+            <circle cx="484" cy="96" r="18" fill="#C88F71" />
+            <path
+              d="M466 93 C467 78, 484 74, 496 80 C503 84, 503 93, 499 97 C491 90, 476 89, 466 93 Z"
+              fill="#161F2E"
+            />
+          </motion.g>
+        </motion.g>
       </motion.g>
 
       {/* Flujo flotante de datos capturados entre ambos personajes */}
       <motion.g
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.65, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 1.3, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         {/* Panel flotante minimalista arriba del diálogo */}
         <rect
@@ -206,11 +245,11 @@ export function Illustration01Know() {
         />
         {/* Barras simbólicas apareciendo progresivamente */}
         {[
-          { x: 350, h: 14, delay: 0.35 },
-          { x: 366, h: 22, delay: 0.45 },
-          { x: 382, h: 18, delay: 0.55 },
-          { x: 398, h: 28, delay: 0.65 },
-          { x: 414, h: 20, delay: 0.75 },
+          { x: 350, h: 14, delay: 0.7 },
+          { x: 366, h: 22, delay: 0.9 },
+          { x: 382, h: 18, delay: 1.1 },
+          { x: 398, h: 28, delay: 1.3 },
+          { x: 414, h: 20, delay: 1.5 },
         ].map((b, i) => (
           <motion.rect
             key={i}
@@ -223,7 +262,7 @@ export function Illustration01Know() {
             opacity={i === 3 ? 0.95 : 0.24}
             initial={{ scaleY: 0, opacity: 0 }}
             animate={{ scaleY: 1, opacity: i === 3 ? 0.95 : 0.26 }}
-            transition={{ duration: 0.4, delay: b.delay, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, delay: b.delay, ease: [0.16, 1, 0.3, 1] }}
             style={{ transformOrigin: `${b.x + 4.5}px 118px` }}
           />
         ))}
@@ -237,7 +276,7 @@ export function Illustration01Know() {
           strokeDasharray="3 4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.75 }}
-          transition={{ duration: 0.5, delay: 0.55 }}
+          transition={{ duration: 1.0, delay: 1.1 }}
         />
       </motion.g>
     </svg>

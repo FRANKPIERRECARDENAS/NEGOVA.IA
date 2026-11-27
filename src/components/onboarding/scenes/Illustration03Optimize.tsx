@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { buildSmoothSvgPath } from "../onboardingLogic";
+import { usePrefersReducedMotion } from "../useStageProgress";
 
 const CAPACITY_WAVE = [36, 32, 46, 66, 86, 94, 84, 62, 48, 42, 50, 62];
 const UNIFORM_BARS = [58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58];
@@ -10,6 +11,7 @@ const ADAPTED_BARS = [30, 27, 38, 56, 76, 84, 74, 53, 40, 35, 42, 52];
  * Un empresario observando dos cronogramas visuales que se transforman en un plan adaptado.
  */
 export function Illustration03Optimize() {
+  const reduced = usePrefersReducedMotion();
   const panelX = 282;
   const panelW = 376;
 
@@ -44,7 +46,7 @@ export function Illustration03Optimize() {
         <motion.g
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           <rect
             x="0"
@@ -74,7 +76,7 @@ export function Illustration03Optimize() {
                 fill={tight ? "var(--accent-risk)" : "var(--text-muted)"}
                 initial={{ opacity: 0, scaleY: 0.25 }}
                 animate={{ opacity: tight ? 0.55 : 0.28, scaleY: 1 }}
-                transition={{ duration: 0.32, delay: 0.05 + idx * 0.015 }}
+                transition={{ duration: 0.64, delay: 0.1 + idx * 0.03 }}
                 style={{ transformOrigin: `${x + barW / 2}px 80px` }}
               />
             );
@@ -94,7 +96,7 @@ export function Illustration03Optimize() {
       <motion.g
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.85 }}
-        transition={{ duration: 0.45, delay: 0.25 }}
+        transition={{ duration: 0.9, delay: 0.5 }}
       >
         <path
           d="M470 152 L470 174 M464 168 L470 175 L476 168"
@@ -111,7 +113,7 @@ export function Illustration03Optimize() {
         <motion.g
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.0, delay: 0.36, ease: [0.16, 1, 0.3, 1] }}
         >
           <rect
             x="0"
@@ -142,8 +144,8 @@ export function Illustration03Optimize() {
                 initial={{ scaleY: 0.2, opacity: 0 }}
                 animate={{ scaleY: 1, opacity: 0.85 }}
                 transition={{
-                  duration: 0.35,
-                  delay: 0.22 + idx * 0.015,
+                  duration: 0.7,
+                  delay: 0.44 + idx * 0.03,
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 style={{ transformOrigin: `${x + barW / 2}px 86px` }}
@@ -156,7 +158,7 @@ export function Illustration03Optimize() {
             stroke="var(--text-primary)"
             strokeWidth="1.8"
             opacity="0.7"
-            className="animate-curve-draw"
+            className="animate-curve-draw-slow"
           />
         </motion.g>
       </g>
@@ -172,27 +174,48 @@ export function Illustration03Optimize() {
         <ellipse cx="177" cy="313" rx="11" ry="3.5" fill="#0A1628" />
         <ellipse cx="212" cy="313" rx="11" ry="3.5" fill="#0A1628" />
 
-        <path
-          d="M166 144 C166 132, 178 126, 195 126 C210 126, 222 134, 222 146 L216 228 L172 228 Z"
-          fill="#D8D2C5"
-        />
-        <path d="M174 146 L214 146 L218 232 L172 232 Z" fill="#2B4C7E" opacity="0.92" />
+        {/* Respiración y postura del tren superior */}
+        <motion.g
+          animate={reduced ? undefined : { y: [0, -3.15, 0], rotate: [0, 1.9, -0.6, 0] }}
+          transition={{ duration: 3.0, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: "194px 228px" }}
+        >
+          <path
+            d="M166 144 C166 132, 178 126, 195 126 C210 126, 222 134, 222 146 L216 228 L172 228 Z"
+            fill="#D8D2C5"
+          />
+          <path d="M174 146 L214 146 L218 232 L172 232 Z" fill="#2B4C7E" opacity="0.92" />
 
-        <path
-          d="M210 150 C228 172, 234 192, 214 196"
-          fill="none"
-          stroke="#D8D2C5"
-          strokeWidth="12"
-          strokeLinecap="round"
-        />
-        <circle cx="212" cy="196" r="5.5" fill="#C88F71" />
+          {/* Movimiento del brazo mientras evalúa los cronogramas */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, -6.55, 1.75, 0] }}
+            transition={{ duration: 2.6, delay: 0.2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "210px 150px" }}
+          >
+            <path
+              d="M210 150 C228 172, 234 192, 214 196"
+              fill="none"
+              stroke="#D8D2C5"
+              strokeWidth="12"
+              strokeLinecap="round"
+            />
+            <circle cx="212" cy="196" r="5.5" fill="#C88F71" />
+          </motion.g>
 
-        <rect x="188" y="110" width="12" height="17" rx="5" fill="#B87E61" />
-        <circle cx="195" cy="94" r="18" fill="#C88F71" />
-        <path
-          d="M177 92 C178 78, 194 74, 207 79 C214 83, 214 91, 210 95 C202 89, 187 88, 177 92 Z"
-          fill="#161F2E"
-        />
+          {/* Mirada alternando entre ambos planes */}
+          <motion.g
+            animate={reduced ? undefined : { rotate: [0, -7.0, 4.8, 0] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "194px 124px" }}
+          >
+            <rect x="188" y="110" width="12" height="17" rx="5" fill="#B87E61" />
+            <circle cx="195" cy="94" r="18" fill="#C88F71" />
+            <path
+              d="M177 92 C178 78, 194 74, 207 79 C214 83, 214 91, 210 95 C202 89, 187 88, 177 92 Z"
+              fill="#161F2E"
+            />
+          </motion.g>
+        </motion.g>
       </motion.g>
     </svg>
   );

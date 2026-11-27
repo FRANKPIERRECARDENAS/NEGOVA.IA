@@ -136,6 +136,11 @@
   animation: curveDraw 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.animate-curve-draw-slow {
+  stroke-dasharray: 1000;
+  animation: curveDraw 1800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
