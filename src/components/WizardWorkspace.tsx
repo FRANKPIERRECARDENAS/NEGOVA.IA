@@ -42,6 +42,7 @@ interface WizardWorkspaceProps {
   onGoLanding: () => void;
   onOpenDemoCases: () => void;
   onOpenIndicators: () => void;
+  onOpenExperience: () => void;
   savedCases: CasoGuardado[];
   onSaveCase: (estadoComite: EstadoComite) => void;
   onLoadSavedCase: (caso: CasoGuardado) => void;
@@ -59,6 +60,7 @@ export function WizardWorkspace({
   onGoLanding,
   onOpenDemoCases,
   onOpenIndicators,
+  onOpenExperience,
   savedCases,
   onSaveCase,
   onLoadSavedCase,
@@ -246,6 +248,15 @@ export function WizardWorkspace({
                   </div>
                 )}
               </div>
+
+              <button
+                type="button"
+                onClick={onOpenExperience}
+                className="inline-flex px-2.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap"
+              >
+                <span className="sm:hidden">Recorrido</span>
+                <span className="hidden sm:inline">Ver recorrido</span>
+              </button>
 
               <button
                 type="button"

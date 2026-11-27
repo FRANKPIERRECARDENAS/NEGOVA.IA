@@ -11,6 +11,7 @@ interface LandingPageProps {
   onStartAnalysis: () => void;
   onOpenIndicators: () => void;
   onExploreDemoCases: () => void;
+  onOpenExperience: () => void;
 }
 
 const PRINCIPIOS = [
@@ -40,6 +41,7 @@ export function LandingPage({
   onStartAnalysis,
   onOpenIndicators,
   onExploreDemoCases,
+  onOpenExperience,
 }: LandingPageProps) {
   const indicators = useMemo(() => computeSyntheticValidationIndicators(), []);
 
@@ -84,6 +86,13 @@ export function LandingPage({
               className="hover:text-[var(--text-primary)] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               Indicadores
+            </button>
+            <button
+              type="button"
+              onClick={onOpenExperience}
+              className="hover:text-[var(--text-primary)] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+            >
+              Ver recorrido
             </button>
           </nav>
 
@@ -137,6 +146,16 @@ export function LandingPage({
                     className="inline-flex items-center gap-1.5 px-4 py-3 text-sm font-medium text-[var(--text-primary)] border border-[var(--border-strong)] hover:bg-[var(--bg-surface)] rounded-lg transition-colors whitespace-nowrap shrink-0"
                   >
                     Explorar casos sintéticos
+                  </button>
+                </div>
+
+                <div className="md:hidden">
+                  <button
+                    type="button"
+                    onClick={onOpenExperience}
+                    className="text-xs font-medium text-[var(--accent-teal)] hover:underline underline-offset-4 transition-colors"
+                  >
+                    Ver recorrido introductorio →
                   </button>
                 </div>
 
@@ -270,7 +289,15 @@ export function LandingPage({
               reproducible
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              type="button"
+              onClick={onOpenExperience}
+              className="hover:text-[var(--text-primary)] transition-colors"
+            >
+              Ver recorrido
+            </button>
+            <span aria-hidden="true">·</span>
             <button
               type="button"
               onClick={onExploreDemoCases}

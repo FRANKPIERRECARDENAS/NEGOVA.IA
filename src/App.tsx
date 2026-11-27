@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { DemoCasesModal } from "./components/DemoCasesModal";
 import { IndicadoresView } from "./components/IndicadoresView";
 import { LandingPage } from "./components/LandingPage";
+import { NegovaExperience } from "./components/onboarding/NegovaExperience";
+import {
+  readOnboardingStatus,
+  saveOnboardingStatus,
+  shouldAutoShowOnboarding,
+} from "./components/onboarding/onboardingLogic";
 import { WizardWorkspace } from "./components/WizardWorkspace";
 import {
   ACTIVIDADES_POR_SECTOR,
@@ -73,6 +79,12 @@ export default function App() {
       if (params.get("autostart") === "1") return "wizard";
     }
     return "landing";
+  });
+
+  const [showExperience, setShowExperience] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const status = readOnboardingStatus(window.localStorage);
+    return shouldAutoShowOnboarding(status, window.location.search);
   });
 
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -173,50 +185,76 @@ export default function App() {
     setCurrentStep(1);
   };
 
+  const handleFinishExperience = (status: "completed" | "skipped") => {
+    if (typeof window !== "undefined") {
+      saveOnboardingStatus(status, window.localStorage);
+    }
+    setShowExperience(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleOpenExperience = () => {
+    setShowExperience(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <>
-      {view === "landing" && (
-        <LandingPage
+      {showExperience ? (
+        <NegovaExperience
           theme={theme}
           onToggleTheme={toggleTheme}
-          onStartAnalysis={() => {
-            setView("wizard");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          onOpenIndicators={() => {
-            setView("indicadores");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          onExploreDemoCases={() => setDemoModalOpen(true)}
+          onComplete={() => handleFinishExperience("completed")}
+          onSkip={() => handleFinishExperience("skipped")}
         />
-      )}
+      ) : (
+        <>
+          {view === "landing" && (
+            <LandingPage
+              theme={theme}
+              onToggleTheme={toggleTheme}
+              onStartAnalysis={() => {
+                setView("wizard");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              onOpenIndicators={() => {
+                setView("indicadores");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              onExploreDemoCases={() => setDemoModalOpen(true)}
+              onOpenExperience={handleOpenExperience}
+            />
+          )}
 
-      {view === "wizard" && (
-        <WizardWorkspace
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          input={input}
-          onUpdateInput={setInput}
-          onResetBlank={() => setInput(createBlankInput())}
-          onGoLanding={() => setView("landing")}
-          onOpenDemoCases={() => setDemoModalOpen(true)}
-          onOpenIndicators={() => setView("indicadores")}
-          savedCases={savedCases}
-          onSaveCase={handleSaveCase}
-          onLoadSavedCase={handleLoadSavedCase}
-          savedNotification={savedNotification}
-          currentStep={currentStep}
-          onStepChange={setCurrentStep}
-        />
-      )}
+          {view === "wizard" && (
+            <WizardWorkspace
+              theme={theme}
+              onToggleTheme={toggleTheme}
+              input={input}
+              onUpdateInput={setInput}
+              onResetBlank={() => setInput(createBlankInput())}
+              onGoLanding={() => setView("landing")}
+              onOpenDemoCases={() => setDemoModalOpen(true)}
+              onOpenIndicators={() => setView("indicadores")}
+              onOpenExperience={handleOpenExperience}
+              savedCases={savedCases}
+              onSaveCase={handleSaveCase}
+              onLoadSavedCase={handleLoadSavedCase}
+              savedNotification={savedNotification}
+              currentStep={currentStep}
+              onStepChange={setCurrentStep}
+            />
+          )}
 
-      {view === "indicadores" && (
-        <IndicadoresView
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          onBack={() => setView("landing")}
-          onStartAnalysis={() => setView("wizard")}
-        />
+          {view === "indicadores" && (
+            <IndicadoresView
+              theme={theme}
+              onToggleTheme={toggleTheme}
+              onBack={() => setView("landing")}
+              onStartAnalysis={() => setView("wizard")}
+            />
+          )}
+        </>
       )}
 
       <DemoCasesModal
