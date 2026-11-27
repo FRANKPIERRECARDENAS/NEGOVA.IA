@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import {
   ONBOARDING_SCENES,
@@ -97,31 +98,65 @@ export function NegovaExperience({ onComplete, onSkip }: NegovaExperienceProps) 
           </button>
         </header>
 
-        {/* Escenario central con amplio espacio negativo */}
-        <main className="flex-1 flex items-center justify-center px-6 sm:px-10 py-4 sm:py-6">
-          <div className="w-full max-w-4xl mx-auto">
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.section
-                key={activeScene.stageCode}
-                custom={direction}
-                initial={{ opacity: 0, x: direction * 22 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: direction * -22 }}
-                transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-                className="flex flex-col items-center text-center"
-                data-testid={`onboarding-scene-${activeScene.stageCode}`}
-              >
-                {/* 1. Ilustración protagonista grande y limpia */}
-                <div className="w-full max-w-[820px] mx-auto">
-                  {sceneIndex === 0 && <Illustration01Know />}
-                  {sceneIndex === 1 && <Illustration02Predict />}
-                  {sceneIndex === 2 && <Illustration03Optimize />}
-                  {sceneIndex === 3 && <Illustration04Anticipate />}
-                  {sceneIndex === 4 && <Illustration05Decide />}
-                </div>
+        {/* Escenario central con flechas simples en los extremos medios de la ilustración */}
+        <main className="flex-1 flex items-center justify-center px-4 sm:px-10 py-4 sm:py-6">
+          <div className="w-full max-w-5xl mx-auto flex flex-col items-center">
+            <div className="relative w-full max-w-[920px] mx-auto flex items-center justify-center">
+              {sceneIndex > 0 && (
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  aria-label="Anterior"
+                  className="absolute left-0 sm:left-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]/70 active:scale-95 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-teal)]"
+                >
+                  <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={1.6} aria-hidden="true" />
+                </button>
+              )}
 
-                {/* 2. Frase principal breve + 3. Descripción de máximo una línea */}
-                <div className="mt-5 sm:mt-7 max-w-2xl mx-auto space-y-2.5">
+              <div className="w-full max-w-[780px] mx-auto px-10 sm:px-14">
+                <AnimatePresence mode="wait" custom={direction}>
+                  <motion.div
+                    key={activeScene.stageCode}
+                    custom={direction}
+                    initial={{ opacity: 0, x: direction * 22 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: direction * -22 }}
+                    transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                    data-testid={`onboarding-scene-${activeScene.stageCode}`}
+                  >
+                    {sceneIndex === 0 && <Illustration01Know />}
+                    {sceneIndex === 1 && <Illustration02Predict />}
+                    {sceneIndex === 2 && <Illustration03Optimize />}
+                    {sceneIndex === 3 && <Illustration04Anticipate />}
+                    {sceneIndex === 4 && <Illustration05Decide />}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {!isLastScene && (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  aria-label="Continuar"
+                  className="absolute right-0 sm:right-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]/70 active:scale-95 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-teal)]"
+                >
+                  <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={1.6} aria-hidden="true" />
+                </button>
+              )}
+            </div>
+
+            {/* Frase principal breve + descripción de máximo una línea */}
+            <div className="mt-5 sm:mt-7 max-w-2xl mx-auto px-4 text-center">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={activeScene.stageCode}
+                  custom={direction}
+                  initial={{ opacity: 0, x: direction * 14 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: direction * -14 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  className="space-y-2.5"
+                >
                   <h1
                     className="font-display font-medium tracking-tight text-[var(--text-primary)] leading-[1.12] text-balance"
                     style={{ fontSize: "clamp(1.75rem, 3.3vw, 2.65rem)" }}
@@ -131,33 +166,23 @@ export function NegovaExperience({ onComplete, onSkip }: NegovaExperienceProps) 
                   <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
                     {activeScene.description}
                   </p>
-                </div>
-              </motion.section>
-            </AnimatePresence>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </main>
 
-        {/* Navegación inferior discreta */}
-        <footer className="w-full max-w-5xl mx-auto px-6 sm:px-10 pb-8 sm:pb-10 pt-3 flex items-center justify-between gap-4">
-          <div className="min-w-[96px]">
-            {sceneIndex > 0 && (
-              <button
-                type="button"
-                onClick={handlePrev}
-                className="px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-teal)]"
-              >
-                Anterior
-              </button>
-            )}
-          </div>
-
-          <button
-            type="button"
-            onClick={handleNext}
-            className="px-7 py-2.5 text-sm font-medium text-[var(--text-on-ink)] bg-[var(--bg-ink)] dark:bg-[var(--accent-teal)] dark:text-[#060D18] hover:opacity-90 active:scale-[0.99] rounded-full transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-teal)]"
-          >
-            {isLastScene ? "Comenzar" : "Continuar"}
-          </button>
+        {/* Pie mínimo: solo botón final Comenzar en la última pantalla */}
+        <footer className="w-full max-w-5xl mx-auto px-6 sm:px-10 pb-8 sm:pb-10 pt-3 min-h-[84px] flex items-center justify-center">
+          {isLastScene && (
+            <button
+              type="button"
+              onClick={onComplete}
+              className="px-7 py-2.5 text-sm font-medium text-[var(--text-on-ink)] bg-[var(--bg-ink)] dark:bg-[var(--accent-teal)] dark:text-[#060D18] hover:opacity-90 active:scale-[0.99] rounded-full transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-teal)]"
+            >
+              Comenzar
+            </button>
+          )}
         </footer>
       </div>
     </MotionConfig>
